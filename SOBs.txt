@@ -1,0 +1,11 @@
+147:  Contribute individually to the code of an end-of-block project and discuss your contribution,
+      explaining the code in detail and answering questions about it. This SOB requires the completion of the 
+      equivalent threshold SOB on a *different* project
+
+152:  Demonstrate a simple understanding of object-oriented programming in 
+      Racket by defining classes, objects and applying methods.
+
+131:  Demonstrate an understanding of design approaches such as top-down design and iterative design. 
+
+133:  Discuss the respective advantages and disadvantages of different data structures, 
+      justifying choices for particular problems. 
