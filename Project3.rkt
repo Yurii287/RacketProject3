@@ -2,7 +2,7 @@
 
 (define WIDTH 400)
 (define HEIGHT 400)
-(define SPACE 50)
+(define SPACE 25)
 (define START_PARTS 3)
 (define ROW (/ HEIGHT SPACE))
 (define COLUMN (/ WIDTH SPACE))
@@ -15,6 +15,11 @@
                 )
     )
   )
+
+(define apple%
+  (class object%
+    (init-field (apple_spawn (make-vector 2)) ; (random (exact-round (/ WIDTH SPACE))) & (random (exact-round (/ HEIGHT SPACE)))
+                (
 
 ; GUI
 (define mainFrame (new frame%
