@@ -1,0 +1,63 @@
+#lang racket/gui
+(require dyoo-while-loop)
+
+;(while (equal? (send key-event get-key-code)  'right)
+;  (set-current_pos-x! positon (+ (current_pos-x positon) 25))
+;                        (sleep/yield 0.5)(move (current_pos-x positon) (current_pos-y positon)))
+(define no-pen (new pen% [style 'transparent]))
+(define no-brush (new brush% [style 'transparent]))
+(define blue-brush (new brush% [color "green"]))
+(define yellow-brush (new brush% [color "yellow"]))
+(define red-pen (new pen% [color "red"] [width 2]))
+(struct current_pos(x y)  #:mutable )
+(define positon(current_pos 0 0))
+(define frame (new frame% [label "Easy Access TFL"]
+                   [alignment '(left top)]
+                   [stretchable-width #f]	 
+                   [stretchable-height #f]
+                   [min-width 800]	 
+                   [min-height 600]))
+
+(define my-canvas%
+  (class canvas% 
+    (define/override (on-char key-event)
+      (cond
+        [(equal? (send key-event get-key-code)  'right) (while (equal? (send key-event get-key-code)  'right)
+  (set-current_pos-x! positon (+ (current_pos-x positon) 25))
+                        (sleep/yield 0.1)(move (current_pos-x positon) (current_pos-y positon)))
+
+                        ]
+        [(equal? (send key-event get-key-code)  'left) (while (equal? (send key-event get-key-code)  'left)
+  (set-current_pos-x! positon (- (current_pos-x positon) 25))
+                        (sleep/yield 0.1)(move (current_pos-x positon) (current_pos-y positon)))
+
+
+
+                        ]
+        [(equal? (send key-event get-key-code)  'down) (while (equal? (send key-event get-key-code)  'down)
+  (set-current_pos-y! positon (+ (current_pos-y positon) 25))
+                        (sleep/yield 0.1)(move (current_pos-x positon) (current_pos-y positon)))
+
+
+                        ]
+        [(equal? (send key-event get-key-code)  'up) (while (equal? (send key-event get-key-code)  'up)
+  (set-current_pos-y! positon (- (current_pos-y positon) 25))
+                        (sleep/yield 0.1)(move (current_pos-x positon) (current_pos-y positon)))
+
+
+                        ]))
+    
+    (super-new)))
+
+(define x(new my-canvas% [parent frame]
+     [paint-callback
+      (lambda (canvas dc)
+        (send dc draw-ellipse 140 120 20 20))]))
+(define button(new button% (parent frame) (label "") (callback (lambda (button event) (send frame show #f) ))))
+
+(define move(λ (x y) (send dc clear)(send dc set-pen no-pen)
+  (send dc set-brush blue-brush)
+  (send dc draw-rectangle x y 50 50)))
+(define dc (send x get-dc))
+
+(send frame show #t)
