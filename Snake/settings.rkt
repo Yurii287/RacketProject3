@@ -8,8 +8,8 @@
          COLUMN)
 
 (define GRID_SIZE 5)
-(define FRAME_SIZE (cons 400 400))
+(define FRAME_SIZE (cons 600 400))
 (define SCALE 25)
 (define START_PARTS 3)
-(define ROW (/ HEIGHT SPACE))
-(define COLUMN (/ WIDTH SPACE))
+(define ROW (/ (cdr FRAME_SIZE) SCALE))
+(define COLUMN (/ (car FRAME_SIZE) SCALE))

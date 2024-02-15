@@ -17,7 +17,7 @@
 
 (define apple%
   (class object%
-    (init-field (apple_spawn (make-vector 2)) ; (random (exact-round (/ WIDTH SPACE))) & (random (exact-round (/ HEIGHT SPACE)))
+    (init-field (apple_spawn (make-vector 2)) 
                 (apple_squares (make-vector 0))
                 (apple_color "Red")
                 )
@@ -25,8 +25,8 @@
   )
 
 ; Functions
-
-(define rand-square (cons (random (exact-round (/ WIDTH SPACE))) (random (exact-round (/ HEIGHT SPACE)))))
+(define rand-square (lambda ()
+                      (cons (random 0 (exact-round (/ (car FRAME_SIZE) SCALE))) (random 0 (exact-round (/ (cdr FRAME_SIZE) SCALE))))))
 
 (define draw-square (lambda (pos dc)
                       (let ([x (first pos)]
@@ -36,11 +36,11 @@
 ; GUI
 (define mainFrame (new frame%
                        [label "Snake"]
-                       [min-width WIDTH]
-                       [min-height HEIGHT]
+                       [min-width (car FRAME_SIZE)]
+                       [min-height (cdr FRAME_SIZE)]
                        [stretchable-width #f]
                        [stretchable-height #f]))
 
 
 
-(send mainFrame show #t)
+(send mainFrame show #f)
