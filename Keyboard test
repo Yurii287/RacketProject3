@@ -4,6 +4,9 @@
 ;(while (equal? (send key-event get-key-code)  'right)
 ;  (set-current_pos-x! positon (+ (current_pos-x positon) 25))
 ;                        (sleep/yield 0.5)(move (current_pos-x positon) (current_pos-y positon)))
+
+
+(define direction "")
 (define no-pen (new pen% [style 'transparent]))
 (define no-brush (new brush% [style 'transparent]))
 (define blue-brush (new brush% [color "green"]))
@@ -11,6 +14,8 @@
 (define red-pen (new pen% [color "red"] [width 2]))
 (struct current_pos(x y)  #:mutable )
 (define positon(current_pos 0 0))
+(define old_pos(current_pos 0 0))
+(define ancient_pos(current_pos 0 0))
 (define frame (new frame% [label "Easy Access TFL"]
                    [alignment '(left top)]
                    [stretchable-width #f]	 
@@ -23,26 +28,57 @@
     (define/override (on-char key-event)
       (cond
         [(equal? (send key-event get-key-code)  'right) (while (equal? (send key-event get-key-code)  'right)
+  (set! direction "R")
+  (display direction)
+  (set-current_pos-x! ancient_pos ( current_pos-x old_pos))
+  (set-current_pos-y! ancient_pos ( current_pos-y old_pos))
+  (set-current_pos-y! old_pos (current_pos-y positon))                                                             
+  (set-current_pos-x! old_pos (current_pos-x positon))                                                             
   (set-current_pos-x! positon (+ (current_pos-x positon) 25))
-                        (sleep/yield 0.1)(move (current_pos-x positon) (current_pos-y positon)))
+                        (sleep/yield 0.07)(move (current_pos-x positon) (current_pos-y positon)
+                                               (current_pos-x old_pos) (current_pos-y old_pos)
+                                               ( current_pos-x ancient_pos) ( current_pos-y ancient_pos)))
 
                         ]
-        [(equal? (send key-event get-key-code)  'left) (while (equal? (send key-event get-key-code)  'left)
+        [(equal? (send key-event get-key-code)  'left) (while (and (equal? (send key-event get-key-code)  'left) (not (equal? direction "R")))
+  (set! direction "L")
+  (display direction)
+  (set-current_pos-x! ancient_pos ( current_pos-x old_pos))
+  (set-current_pos-y! ancient_pos ( current_pos-y old_pos)) 
+  (set-current_pos-y! old_pos (current_pos-y positon))                                                            
+  (set-current_pos-x! old_pos (current_pos-x positon))                                                            
   (set-current_pos-x! positon (- (current_pos-x positon) 25))
-                        (sleep/yield 0.1)(move (current_pos-x positon) (current_pos-y positon)))
+                        (sleep/yield 0.07)(move (current_pos-x positon) (current_pos-y positon)
+                                               (current_pos-x old_pos) (current_pos-y old_pos)
+                                               ( current_pos-x ancient_pos) ( current_pos-y ancient_pos)))
 
 
 
                         ]
-        [(equal? (send key-event get-key-code)  'down) (while (equal? (send key-event get-key-code)  'down)
+        [(equal? (send key-event get-key-code)  'down) (while (and (equal? (send key-event get-key-code)  'down) (not (equal? direction "U")))
+  (set! direction "D")
+  (display direction)
+  (set-current_pos-x! ancient_pos ( current_pos-x old_pos))
+  (set-current_pos-y! ancient_pos ( current_pos-y old_pos))
+  (set-current_pos-y! old_pos (current_pos-y positon))
+  (set-current_pos-x! old_pos (current_pos-x positon))
   (set-current_pos-y! positon (+ (current_pos-y positon) 25))
-                        (sleep/yield 0.1)(move (current_pos-x positon) (current_pos-y positon)))
+                        (sleep/yield 0.07)(move (current_pos-x positon) (current_pos-y positon)
+                                               (current_pos-x old_pos) (current_pos-y old_pos)
+                                               ( current_pos-x ancient_pos) ( current_pos-y ancient_pos)))
 
 
                         ]
-        [(equal? (send key-event get-key-code)  'up) (while (equal? (send key-event get-key-code)  'up)
+        [(equal? (send key-event get-key-code)  'up) (while (and (equal? (send key-event get-key-code)  'up) (not (equal? direction "D")))
+  (set! direction "U") 
+  (set-current_pos-x! ancient_pos ( current_pos-x old_pos))
+  (set-current_pos-y! ancient_pos ( current_pos-y old_pos))
+  (set-current_pos-y! old_pos (current_pos-y positon))
+  (set-current_pos-x! old_pos (current_pos-x positon))
   (set-current_pos-y! positon (- (current_pos-y positon) 25))
-                        (sleep/yield 0.1)(move (current_pos-x positon) (current_pos-y positon)))
+                        (sleep/yield 0.07)(move (current_pos-x positon) (current_pos-y positon)
+                                               (current_pos-x old_pos) (current_pos-y old_pos)
+                                               ( current_pos-x ancient_pos) ( current_pos-y ancient_pos)))
 
 
                         ]))
@@ -55,9 +91,12 @@
         (send dc draw-ellipse 140 120 20 20))]))
 (define button(new button% (parent frame) (label "") (callback (lambda (button event) (send frame show #f) ))))
 
-(define move(λ (x y) (send dc clear)(send dc set-pen no-pen)
+(define move(λ (x y z w u v) (send dc clear)(send dc set-pen no-pen)
   (send dc set-brush blue-brush)
-  (send dc draw-rectangle x y 50 50)))
+  (send dc draw-rectangle u v 50 50)            
+  (send dc draw-rectangle z w 50 50)
+  (send dc draw-rectangle x y 50 50)
+  ))
 (define dc (send x get-dc))
 
 (send frame show #t)
