@@ -9,3 +9,6 @@
 
 133:  Discuss the respective advantages and disadvantages of different data structures, 
       justifying choices for particular problems. 
+
+143: Write a simple program using the let construct. 
+
