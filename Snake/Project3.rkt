@@ -7,20 +7,28 @@
 ; Classes
 (define snake%
   (class object%
+    (super-new)
     (init-field (body_parts START_PARTS)
                 (body_coords (make-vector 0))
                 (body_squares (make-vector 0))
-                (body_color "Green")
+                (body_color "green")
                 )
+    (define/public get-body-color (λ () body_color))
+    (define/public get-body-coords (λ () body_coords))
+    (define/public get-body-squares (λ () body_squares))
     )
   )
 
 (define apple%
   (class object%
+    (super-new)
     (init-field (apple_spawn (make-vector 2)) 
                 (apple_squares (make-vector 0))
-                (apple_color "Red")
+                (apple_color "red")
                 )
+    (define/public get-apple-color (λ () apple_color))
+    (define/public get-apple-spawn (λ () apple_spawn))
+    (define/public get-apple-squares (λ () apple_squares))
     )
   )
 
@@ -41,6 +49,13 @@
                        [stretchable-width #f]
                        [stretchable-height #f]))
 
+(define gameScreen (new canvas%
+                        [parent mainFrame]))
+  
 
+; Variables
+(define gameCanvas (send gameScreen get-dc))
+(define snake (new snake%))
+(define apple (new apple%))
 
-(send mainFrame show #f)
+(send mainFrame show #t)
