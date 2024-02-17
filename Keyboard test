@@ -12,13 +12,15 @@
 (define blue-brush (new brush% [color "green"]))
 (define yellow-brush (new brush% [color "red"]))
 (define red-pen (new pen% [color "red"] [width 2]))
+(define score 0)
 (struct current_pos(x y)  #:mutable )
 (define positon(current_pos 0 0))
 (define old_pos(current_pos 0 0))
 (define ancient_pos(current_pos 0 0))
 (define extinct_pos(current_pos 0 0))
 (define apple_pos(current_pos (random 800) (random 600)))
-(define frame (new frame% [label "Easy Access TFL"]
+
+(define frame (new frame% [label "Snake"]
                    [alignment '(left top)]
                    [stretchable-width #f]	 
                    [stretchable-height #f]
@@ -28,8 +30,7 @@
 (define my-canvas%
   (class canvas% 
     (define/override (on-char key-event)
-      (cond
-        [(equal? (send key-event get-key-code)  'right) (while (and (equal? (send key-event get-key-code)  'right) (not (equal? direction "L")))
+               (while (and (equal? (send key-event get-key-code)  'right) (not (equal? direction "L")))
   (set! direction "R")
   (set-current_pos-x! extinct_pos ( current_pos-x ancient_pos))
   (set-current_pos-y! extinct_pos ( current_pos-y ancient_pos))
@@ -38,14 +39,14 @@
   (set-current_pos-y! old_pos (current_pos-y positon))                                                             
   (set-current_pos-x! old_pos (current_pos-x positon))                                                             
   (set-current_pos-x! positon (+ (current_pos-x positon) 10))
-                        (sleep/yield 0.07)(move (current_pos-x positon) (current_pos-y positon)
+                        (move (current_pos-x positon) (current_pos-y positon)
                                                (current_pos-x old_pos) (current_pos-y old_pos)
                                                ( current_pos-x ancient_pos) ( current_pos-y ancient_pos)
                                                ( current_pos-x extinct_pos) ( current_pos-y extinct_pos)
                                                ))
 
-                        ]
-        [(equal? (send key-event get-key-code)  'left) (while (and (equal? (send key-event get-key-code)  'left) (not (equal? direction "R")))
+                        
+         (while (and (equal? (send key-event get-key-code)  'left) (not (equal? direction "R")))
   (set! direction "L")
   (set-current_pos-x! extinct_pos ( current_pos-x ancient_pos))
   (set-current_pos-y! extinct_pos ( current_pos-y ancient_pos))
@@ -54,15 +55,15 @@
   (set-current_pos-y! old_pos (current_pos-y positon))                                                            
   (set-current_pos-x! old_pos (current_pos-x positon))                                                            
   (set-current_pos-x! positon (- (current_pos-x positon) 10))
-                        (sleep/yield 0.07)(move (current_pos-x positon) (current_pos-y positon)
+                        (move (current_pos-x positon) (current_pos-y positon)
                                                (current_pos-x old_pos) (current_pos-y old_pos)
                                                ( current_pos-x ancient_pos) ( current_pos-y ancient_pos)
                                                ( current_pos-x extinct_pos) ( current_pos-y extinct_pos)))
 
 
 
-                        ]
-        [(equal? (send key-event get-key-code)  'down) (while (and (equal? (send key-event get-key-code)  'down) (not (equal? direction "U")))
+                        
+         (while (and (equal? (send key-event get-key-code)  'down) (not (equal? direction "U")))
   (set! direction "D")
   (set-current_pos-x! extinct_pos ( current_pos-x ancient_pos))
   (set-current_pos-y! extinct_pos ( current_pos-y ancient_pos))
@@ -71,14 +72,14 @@
   (set-current_pos-y! old_pos (current_pos-y positon))
   (set-current_pos-x! old_pos (current_pos-x positon))
   (set-current_pos-y! positon (+ (current_pos-y positon) 10))
-                        (sleep/yield 0.07)(move (current_pos-x positon) (current_pos-y positon)
+                        (move (current_pos-x positon) (current_pos-y positon)
                                                (current_pos-x old_pos) (current_pos-y old_pos)
                                                ( current_pos-x ancient_pos) ( current_pos-y ancient_pos)
                                                ( current_pos-x extinct_pos) ( current_pos-y extinct_pos)))
 
 
-                        ]
-        [(equal? (send key-event get-key-code)  'up) (while (and (equal? (send key-event get-key-code)  'up) (not (equal? direction "D")))
+                        
+         (while (and (equal? (send key-event get-key-code)  'up) (not (equal? direction "D")))
   (set! direction "U")
   (set-current_pos-x! extinct_pos ( current_pos-x ancient_pos))
   (set-current_pos-y! extinct_pos ( current_pos-y ancient_pos))
@@ -87,13 +88,11 @@
   (set-current_pos-y! old_pos (current_pos-y positon))
   (set-current_pos-x! old_pos (current_pos-x positon))
   (set-current_pos-y! positon (- (current_pos-y positon) 10))
-                        (sleep/yield 0.07)(move (current_pos-x positon) (current_pos-y positon)
+                        (move (current_pos-x positon) (current_pos-y positon)
                                                (current_pos-x old_pos) (current_pos-y old_pos)
                                                ( current_pos-x ancient_pos) ( current_pos-y ancient_pos)
                                                ( current_pos-x extinct_pos) ( current_pos-y extinct_pos)))
-
-
-                        ]))
+)
     
     (super-new)))
 
@@ -104,20 +103,27 @@
                              #:weight 'bold))
         (send dc draw-text "SNAKE" 300 200)
         )]))
-(define button(new button% (parent frame) (label "") (callback (lambda (button event) (send frame show #f) ))))
+(define button(new button% (parent frame) (label "") (callback (lambda (button event) (set! score (+ score 10)) ))))
 
-(define move(λ (x y z w u v s t) (send dc clear)(send dc set-pen no-pen)
-  (send dc set-brush yellow-brush)
-  (send dc draw-rectangle (current_pos-x apple_pos) (current_pos-y apple_pos) 20 20)
-  (send dc set-brush blue-brush)
-  (send dc draw-rectangle s t 20 20) 
-  (send dc draw-rectangle u v 20 20)            
-  (send dc draw-rectangle z w 20 20)
-  (send dc draw-rectangle x y 20 20)
-  (send dc set-brush yellow-brush) 
-   (send dc draw-rectangle x y 5 5)
-  (send dc draw-rectangle (+ 15 x) y 5 5)
-  ))
+(define move(λ (x y z w u v s t) (sleep/yield 0.07)(send dc clear)
+              (send dc set-font (make-font #:size 20 #:family 'modern
+                             #:weight 'bold))
+              (send dc draw-text (string-append "Score: " (number->string score)) 5 0)
+              (send dc set-brush yellow-brush)
+              (send dc set-pen "black" 5 'solid)
+              (send dc draw-line 0 0 0 600)
+              (send dc set-pen no-pen)
+              (send dc set-brush yellow-brush)
+              (send dc draw-rectangle (current_pos-x apple_pos) (current_pos-y apple_pos) 20 20)
+              (send dc set-brush blue-brush)
+              (send dc draw-rectangle s t 20 20) 
+              (send dc draw-rectangle u v 20 20)            
+              (send dc draw-rectangle z w 20 20)
+              (send dc draw-rectangle x y 20 20)
+              (send dc set-brush yellow-brush) 
+              (send dc draw-rectangle x y 5 5)
+              (send dc draw-rectangle (+ 15 x) y 5 5)
+              ))
 (define dc (send x get-dc))
 
 (send frame show #t)
