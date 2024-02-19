@@ -36,10 +36,13 @@
 (define rand-square (lambda ()
                       (cons (random 0 (exact-round (/ (car FRAME_SIZE) SCALE))) (random 0 (exact-round (/ (cdr FRAME_SIZE) SCALE))))))
 
-(define draw-square (lambda (pos dc)
+(define draw-square (lambda (dc pos)
                       (let ([x (first pos)]
                                [y (second pos)])
-                        (send dc draw-rectangle x y 5 5))))
+                        (send dc draw-rectangle x y 25 25))))
+
+(define color-square (lambda (dc brush)
+                       (send dc set-brush brush)))
 
 ; GUI
 (define mainFrame (new frame%
@@ -54,8 +57,13 @@
   
 
 ; Variables
+; World variables
 (define gameCanvas (send gameScreen get-dc))
+; Snake variables
 (define snake (new snake%))
+(define snake_brush (new brush% [color "green"]))
+; Apple Variables
 (define apple (new apple%))
+(define apple_brush (new brush% [color "apple"]))
 
 (send mainFrame show #t)
