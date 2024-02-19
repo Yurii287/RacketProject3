@@ -2,6 +2,7 @@
 
 (require racket/gui
          racket/draw
+         dyoo-while-loop
          "settings.rkt")
 
 ; Classes
@@ -10,7 +11,7 @@
     (super-new)
     (init-field (body_parts START_PARTS)
                 (body_coords (make-vector 0))
-                (body_squares (make-vector 0))
+                (body_squares (make-vector 0)) 
                 (body_color "green")
                 )
     (define/public get-body-color (λ () body_color))
@@ -37,8 +38,8 @@
                       (cons (random 0 (exact-round (/ (car FRAME_SIZE) SCALE))) (random 0 (exact-round (/ (cdr FRAME_SIZE) SCALE))))))
 
 (define draw-square (lambda (dc pos)
-                      (let ([x (first pos)]
-                               [y (second pos)])
+                      (let ([x (vector-ref pos 0)]
+                               [y (vector-ref pos 1)])
                         (send dc draw-rectangle x y 25 25))))
 
 (define color-square (lambda (dc brush)
@@ -47,8 +48,8 @@
 ; GUI
 (define mainFrame (new frame%
                        [label "Snake"]
-                       [min-width (car FRAME_SIZE)]
-                       [min-height (cdr FRAME_SIZE)]
+                       [min-width (vector-ref FRAME_SIZE 0)]
+                       [min-height (vector-ref FRAME_SIZE 1)]
                        [stretchable-width #f]
                        [stretchable-height #f]))
 
@@ -62,6 +63,7 @@
 ; Snake variables
 (define snake (new snake%))
 (define snake_brush (new brush% [color "green"]))
+(define snake_start (vector 0 0))
 ; Apple Variables
 (define apple (new apple%))
 (define apple_brush (new brush% [color "apple"]))

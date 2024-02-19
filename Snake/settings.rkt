@@ -8,8 +8,10 @@
          COLUMN)
 
 (define GRID_SIZE 5)
-(define FRAME_SIZE (cons 600 400))
+(define FRAME_SIZE (vector 600 400))
 (define SCALE 25)
 (define START_PARTS 3)
-(define ROW (/ (cdr FRAME_SIZE) SCALE))
-(define COLUMN (/ (car FRAME_SIZE) SCALE))
+(define ROW (/ (vector-ref FRAME_SIZE 0) SCALE))
+(define COLUMN (/ (vector-ref FRAME_SIZE 1) SCALE))
+
+; Key-bindings
