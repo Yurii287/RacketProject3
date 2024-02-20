@@ -13,5 +13,3 @@
 (define START_PARTS 3)
 (define ROW (/ (vector-ref FRAME_SIZE 0) SCALE))
 (define COLUMN (/ (vector-ref FRAME_SIZE 1) SCALE))
-
-; Key-bindings
