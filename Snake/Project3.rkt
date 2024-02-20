@@ -25,7 +25,7 @@
                 (body_coords (for/vector ([i body_parts]) (make-vector 2)))
                 (body_squares (make-vector 0)) 
                 (body_color "green")
-                (direction "up")
+                (direction "down")
                 )
     (define/public get-body-color (λ () body_color))
     (define/public get-body-coords (λ () body_coords))
