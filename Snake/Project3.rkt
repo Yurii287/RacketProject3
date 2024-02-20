@@ -10,7 +10,13 @@
   (class canvas%
     (define/override (on-char key-event)
       (cond
-        ([equal? (send key-event get-key-code) 'up] (draw-square gameCanvas #(300 300)))
+        ([equal? (send key-event get-key-code) #\return]
+         (color-square gameCanvas snake_brush)
+         (vector-set! (send snake get-body-coords) 0 snake_start)
+         (for ([i (vector-length (send snake get-body-coords))])
+           (draw-square gameCanvas (vector-ref (send snake get-body-coords) i))))
+        
+        ([equal? (send key-event get-key-code) 'up] (send snake set-snake-direction 'up) (draw-square gameCanvas (vector (vector-ref (vector-ref (send snake get-body-coords) 0) 0) (- (vector-ref (vector-ref (send snake get-body-coords) 0) 1) SCALE))))
         ([equal? (send key-event get-key-code) 'down] (draw-square gameCanvas #(200 200)))
         ([equal? (send key-event get-key-code) 'left] (draw-square gameCanvas #(100 100)))
         ([equal? (send key-event get-key-code) 'right] (draw-square gameCanvas #(50 50)))
@@ -23,13 +29,11 @@
     (super-new)
     (init-field (body_parts START_PARTS)
                 (body_coords (for/vector ([i body_parts]) (make-vector 2)))
-                (body_squares (make-vector 0)) 
                 (body_color "green")
-                (direction "down")
+                (direction 'down)
                 )
     (define/public get-body-color (λ () body_color))
     (define/public get-body-coords (λ () body_coords))
-    (define/public get-body-squares (λ () body_squares))
     (define/public get-snake-direction (λ () direction))
     (define/public set-snake-direction (λ (x) (set! direction x)))
     (define/public set-body-coords (λ (x y) (vector-set! body_coords x y)))
@@ -41,12 +45,10 @@
   (class object%
     (super-new)
     (init-field (apple_spawn (make-vector 2)) 
-                (apple_squares (make-vector 0))
                 (apple_color "red")
                 )
     (define/public get-apple-color (λ () apple_color))
     (define/public get-apple-spawn (λ () apple_spawn))
-    (define/public get-apple-squares (λ () apple_squares))
     )
   )
 
@@ -57,10 +59,13 @@
 (define draw-square (lambda (dc pos)
                       (let ([x (vector-ref pos 0)]
                                [y (vector-ref pos 1)])
-                        (send dc draw-rectangle x y 25 25))))
+                        (send dc draw-rectangle x y SCALE SCALE))))
 
 (define color-square (lambda (dc brush)
                        (send dc set-brush brush)))
+
+; v -> body_coords
+
 
 ; GUI
 (define mainFrame (new frame%
