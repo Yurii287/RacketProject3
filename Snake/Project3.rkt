@@ -9,18 +9,17 @@
 (define game-canvas%
   (class canvas%
     (define/override (on-char key-event)
-      (cond
-        ([equal? (send key-event get-key-code) #\return]
-         (color-square gameCanvas snake_brush)
-         (vector-set! (send snake get-body-coords) 0 snake_start)
-         (for ([i (vector-length (send snake get-body-coords))])
-           (draw-square gameCanvas (vector-ref (send snake get-body-coords) i))))
-        
-        ([equal? (send key-event get-key-code) 'up] (send snake set-snake-direction 'up) (draw-square gameCanvas (vector (vector-ref (vector-ref (send snake get-body-coords) 0) 0) (- (vector-ref (vector-ref (send snake get-body-coords) 0) 1) SCALE))))
-        ([equal? (send key-event get-key-code) 'down] (draw-square gameCanvas #(200 200)))
-        ([equal? (send key-event get-key-code) 'left] (draw-square gameCanvas #(100 100)))
-        ([equal? (send key-event get-key-code) 'right] (draw-square gameCanvas #(50 50)))
-        )
+      (while (equal? (send key-event get-key-code) #\return)
+              (color-square gameCanvas snake_brush)
+              (vector-set! (send snake get-body-coords) 0 snake_start)
+              (vector-set! (send snake get-body-coords) 1 (vector (- (vector-ref snake_start 0) SCALE) (vector-ref snake_start 1)))
+              (vector-set! (send snake get-body-coords) 2 (vector (- (vector-ref snake_start 0) (* 2 SCALE)) (vector-ref snake_start 1)))
+              (break))
+      (while (equal? (send key-event get-key-code) 'up)
+             (send snake set-snake-direction 'up)
+             (for ([i (send snake get-body-coords)])
+               (draw-square gameCanvas (vector (vector-ref i 0) (vector-ref i 1))))
+             (break))
       )
     (super-new)))
 
@@ -30,7 +29,7 @@
     (init-field (body_parts START_PARTS)
                 (body_coords (for/vector ([i body_parts]) (make-vector 2)))
                 (body_color "green")
-                (direction 'down)
+                (direction 'up)
                 )
     (define/public get-body-color (λ () body_color))
     (define/public get-body-coords (λ () body_coords))
@@ -63,9 +62,6 @@
 
 (define color-square (lambda (dc brush)
                        (send dc set-brush brush)))
-
-; v -> body_coords
-
 
 ; GUI
 (define mainFrame (new frame%
