@@ -1,4 +1,5 @@
 #lang racket
+(require racket/trace)
 ;; Variables
 (define empty-cell 0)
 (define occupied-cell 1)
@@ -53,7 +54,8 @@
 (define set-ship-position-east (lambda (ship-name y x lst)
                             (cond
                               ([equal? (length lst) (ship-length ship-name)] (set-ship-position! ship-name (reverse lst)))
-                              (else (set-ship-position-east ship-name y (+ x 1) (cons (list y x) lst)))
+                              ([< x 1] "Can not place ship here")
+                              (else (set-ship-position-east ship-name y (- x 1) (cons (list y x) lst)))
                               )
                             )
   )
@@ -69,7 +71,8 @@
 (define set-ship-position-west (lambda (ship-name y x lst)
                             (cond
                               ([equal? (length lst) (ship-length ship-name)] (set-ship-position! ship-name (reverse lst)))
-                              (else (set-ship-position-west ship-name y (- x 1) (cons (list y x) lst)))
+                              ([> x 8] "Can not place ship here")
+                              (else (set-ship-position-west ship-name y (+ x 1) (cons (list y x) lst)))
                               )
                             )
   )
@@ -81,6 +84,7 @@
                                     )
                                   )
   )
+(trace set-ship-position-south)
 
 (define set-ship-position (lambda (ship-name y x direction)
                             (cond
@@ -91,8 +95,8 @@
                               )
                             )
   )
-; End of place ship directionals
+
+; Draw to grid
 (define draw-ship-position (lambda (ship-name)
                              (for ([i (ship-position ship-name)])
                                (set-state-grid i occupied-cell))))
-                             
