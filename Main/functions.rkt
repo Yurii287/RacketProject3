@@ -1,6 +1,4 @@
 #lang racket
-(require racket/trace)
-
 ;; Variables
 (define empty-cell 0)
 (define occupied-cell 1)
@@ -26,6 +24,7 @@
                  "G" (seventh GRID)
                  "H" (eighth GRID)))
 
+
 ;; Ship setup
 (struct ship (length position) #:mutable)
 
@@ -38,6 +37,8 @@
 ;; Functions
 (define grid-list (hash->list grid-ht #t))
 
+(define grid-keys (hash-keys grid-ht #t))
+
 (define set-state-grid (lambda (co-ord state)
                          (let ([y (first co-ord)]
                                [x (second co-ord)])
@@ -48,10 +49,50 @@
                                [x (second co-ord)])
                          (vector-ref (hash-ref grid-ht y) (- x 1)))))
 
-(define set-ship-position1 (lambda (ship-name y x lst) ;only works for east placement
+; Place ship directionals -> combine into expandable function later
+(define set-ship-position-east (lambda (ship-name y x lst)
                             (cond
                               ([equal? (length lst) (ship-length ship-name)] (set-ship-position! ship-name (reverse lst)))
-                              (else (set-ship-position1 ship-name y (+ x 1) (cons (list y x) lst)))
+                              (else (set-ship-position-east ship-name y (+ x 1) (cons (list y x) lst)))
                               )
                             )
   )
+
+(define set-ship-position-north (lambda (ship-name y x lst)
+                                  (cond
+                                    ([equal? (length lst) (ship-length ship-name)] (set-ship-position! ship-name (reverse lst)))
+                                    (else (set-ship-position-north ship-name (list-ref grid-keys (+ (index-of grid-keys y) 1)) x (cons (list y x) lst)))
+                                    )
+                                  )
+  )
+
+(define set-ship-position-west (lambda (ship-name y x lst)
+                            (cond
+                              ([equal? (length lst) (ship-length ship-name)] (set-ship-position! ship-name (reverse lst)))
+                              (else (set-ship-position-west ship-name y (- x 1) (cons (list y x) lst)))
+                              )
+                            )
+  )
+
+(define set-ship-position-south (lambda (ship-name y x lst)
+                                  (cond
+                                    ([equal? (length lst) (ship-length ship-name)] (set-ship-position! ship-name (reverse lst)))
+                                    (else (set-ship-position-south ship-name (list-ref grid-keys (- (index-of grid-keys y) 1)) x (cons (list y x) lst)))
+                                    )
+                                  )
+  )
+
+(define set-ship-position (lambda (ship-name y x direction)
+                            (cond
+                              ([equal? direction "east"] (set-ship-position-east ship-name y x '()))
+                              ([equal? direction "west"] (set-ship-position-west ship-name y x '()))
+                              ([equal? direction "north"] (set-ship-position-north ship-name y x '()))
+                              ([equal? direction "south"] (set-ship-position-south ship-name y x '()))
+                              )
+                            )
+  )
+; End of place ship directionals
+(define draw-ship-position (lambda (ship-name)
+                             (for ([i (ship-position ship-name)])
+                               (set-state-grid i occupied-cell))))
+                             
