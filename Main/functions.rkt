@@ -24,11 +24,7 @@
                  "G" (seventh GRID)
                  "H" (eighth GRID)))
 
-;; Grid functions
-(define set-state-grid (lambda (y x state)
-                         (vector-set! (hash-ref grid-ht y) (- x 1) state)))
-
-;; Structs
+;; Ship setup
 (struct ship (length position) #:mutable)
 
 (define carrier (ship 5 (list '() '() '() '() '() )))
@@ -37,4 +33,9 @@
 (define submarine (ship 3 (list '() '() '() )))
 (define destroyer (ship 2 (list '() '() )))
 
+;; Functions
+(define set-state-grid (lambda (y x state)
+                         (vector-set! (hash-ref grid-ht y) (- x 1) state)))
 
+(define get-state-grid (lambda (y x)
+                         (vector-ref (hash-ref grid-ht y) (- x 1))))
