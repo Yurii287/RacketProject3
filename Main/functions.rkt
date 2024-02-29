@@ -1,4 +1,6 @@
 #lang racket
+(require racket/trace)
+
 ;; Variables
 (define empty-cell 0)
 (define occupied-cell 1)
@@ -34,8 +36,22 @@
 (define destroyer (ship 2 (list '() '() )))
 
 ;; Functions
-(define set-state-grid (lambda (y x state)
-                         (vector-set! (hash-ref grid-ht y) (- x 1) state)))
+(define grid-list (hash->list grid-ht #t))
 
-(define get-state-grid (lambda (y x)
-                         (vector-ref (hash-ref grid-ht y) (- x 1))))
+(define set-state-grid (lambda (co-ord state)
+                         (let ([y (first co-ord)]
+                               [x (second co-ord)])
+                           (vector-set! (hash-ref grid-ht y) (- x 1) state))))
+
+(define get-state-grid (lambda (co-ord)
+                         (let ([y (first co-ord)]
+                               [x (second co-ord)])
+                         (vector-ref (hash-ref grid-ht y) (- x 1)))))
+
+(define set-ship-position1 (lambda (ship-name y x lst) ;only works for east placement
+                            (cond
+                              ([equal? (length lst) (ship-length ship-name)] (set-ship-position! ship-name (reverse lst)))
+                              (else (set-ship-position1 ship-name y (+ x 1) (cons (list y x) lst)))
+                              )
+                            )
+  )
