@@ -5,6 +5,9 @@
 (define occupied-cell 1)
 (define destroyed-cell 2)
 
+(define active-player " ")
+(set! active-player "Player 1")
+
 ;; Grid setup
 (define GRID (list (vector 0 0 0 0 0 0 0 0)
                    (vector 0 0 0 0 0 0 0 0)
@@ -27,13 +30,13 @@
 
 
 ;; Ship setup
-(struct ship (length position placed) #:mutable)
+(struct ship (length position P1placed P2placed) #:mutable)
 
-(define carrier (ship 5 (list '() '() '() '() '() ) #f))
-(define battleship (ship 4 (list '() '() '() '() ) #f))
-(define cruiser (ship 3 (list '() '() '() ) #f))
-(define submarine (ship 3 (list '() '() '() ) #f))
-(define destroyer (ship 2 (list '() '() ) #f))
+(define carrier (ship 5 (list '() '() '() '() '() ) #f #f))
+(define battleship (ship 4 (list '() '() '() '() ) #f #f))
+(define cruiser (ship 3 (list '() '() '() ) #f #f))
+(define submarine (ship 3 (list '() '() '() ) #f #f))
+(define destroyer (ship 2 (list '() '() ) #f #f))
 
 ;; Functions
 (define grid-list (hash->list grid-ht #t))
@@ -104,5 +107,9 @@
 (define draw-ship-to-grid (lambda (ship-name y x direction)
                             (set-ship-position ship-name y x direction)
                             (set-ship-position-grid ship-name)
-                            (set-ship-placed! ship-name #t)
+                            (cond
+                              ([equal? active-player "Player 1"] (set-ship-P1placed! ship-name #t))
+                              ([equal? active-player "Player 2"] (set-ship-P2placed! ship-name #t)))
                             GRID))
+
+; Player Turns
