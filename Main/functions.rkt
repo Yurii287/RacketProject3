@@ -27,13 +27,13 @@
 
 
 ;; Ship setup
-(struct ship (length position) #:mutable)
+(struct ship (length position placed) #:mutable)
 
-(define carrier (ship 5 (list '() '() '() '() '() )))
-(define battleship (ship 4 (list '() '() '() '() )))
-(define cruiser (ship 3 (list '() '() '() )))
-(define submarine (ship 3 (list '() '() '() )))
-(define destroyer (ship 2 (list '() '() )))
+(define carrier (ship 5 (list '() '() '() '() '() ) #f))
+(define battleship (ship 4 (list '() '() '() '() ) #f))
+(define cruiser (ship 3 (list '() '() '() ) #f))
+(define submarine (ship 3 (list '() '() '() ) #f))
+(define destroyer (ship 2 (list '() '() ) #f))
 
 ;; Functions
 (define grid-list (hash->list grid-ht #t))
@@ -97,6 +97,12 @@
   )
 
 ; Draw to grid
-(define draw-ship-position (lambda (ship-name)
+(define set-ship-position-grid (lambda (ship-name)
                              (for ([i (ship-position ship-name)])
                                (set-state-grid i occupied-cell))))
+
+(define draw-ship-to-grid (lambda (ship-name y x direction)
+                            (set-ship-position ship-name y x direction)
+                            (set-ship-position-grid ship-name)
+                            (set-ship-placed! ship-name #t)
+                            GRID))
