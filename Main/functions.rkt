@@ -8,52 +8,65 @@
 (define active-player " ")
 (set! active-player "Player 1")
 
-;; CHANGE GRID TO VECTOR OF VECTORS, CREATE 2 GRIDS,
+; Grid setup
+(define P1-GRID (for/vector ([i 8]) (make-vector 8)))
 
-;; Grid setup
-(define GRID (list (vector 0 0 0 0 0 0 0 0)
-                   (vector 0 0 0 0 0 0 0 0)
-                   (vector 0 0 0 0 0 0 0 0)
-                   (vector 0 0 0 0 0 0 0 0)
-                   (vector 0 0 0 0 0 0 0 0)
-                   (vector 0 0 0 0 0 0 0 0)
-                   (vector 0 0 0 0 0 0 0 0)
-                   (vector 0 0 0 0 0 0 0 0)))
-
-(define grid-ht (hash
-                 "A" (first GRID)
-                 "B" (second GRID)
-                 "C" (third GRID)
-                 "D" (fourth GRID)
-                 "E" (fifth GRID)
-                 "F" (sixth GRID)
-                 "G" (seventh GRID)
-                 "H" (eighth GRID)))
+(define P2-GRID (for/vector ([i 8]) (make-vector 8)))
 
 
-;; Ship setup
-(struct ship (length position P1placed P2placed) #:mutable)
+(define grid-ht-p1 (hash
+                 "A" (vector-ref P1-GRID 0)
+                 "B" (vector-ref P1-GRID 1)
+                 "C" (vector-ref P1-GRID 2)
+                 "D" (vector-ref P1-GRID 3)
+                 "E" (vector-ref P1-GRID 4)
+                 "F" (vector-ref P1-GRID 5)
+                 "G" (vector-ref P1-GRID 6)
+                 "H" (vector-ref P1-GRID 7)))
 
-(define carrier (ship 5 (list '() '() '() '() '() ) #f #f))
-(define battleship (ship 4 (list '() '() '() '() ) #f #f))
-(define cruiser (ship 3 (list '() '() '() ) #f #f))
-(define submarine (ship 3 (list '() '() '() ) #f #f))
-(define destroyer (ship 2 (list '() '() ) #f #f))
+(define grid-ht-p2 (hash
+                 "A" (vector-ref P1-GRID 0)
+                 "B" (vector-ref P1-GRID 1)
+                 "C" (vector-ref P1-GRID 2)
+                 "D" (vector-ref P1-GRID 3)
+                 "E" (vector-ref P1-GRID 4)
+                 "F" (vector-ref P1-GRID 5)
+                 "G" (vector-ref P1-GRID 6)
+                 "H" (vector-ref P1-GRID 7)))
 
-;; Functions
-(define grid-list (hash->list grid-ht #t))
 
-(define grid-keys (hash-keys grid-ht #t))
 
-(define set-state-grid (lambda (co-ord state)
+; Ship setup
+(struct ship (length position P1-state P2-state) #:mutable)
+
+(define carrier (ship 5 (list '() '() '() '() '() ) 0 0))
+(define battleship (ship 4 (list '() '() '() '() ) 0 0))
+(define cruiser (ship 3 (list '() '() '() ) 0 0))
+(define submarine (ship 3 (list '() '() '() ) 0 0))
+(define destroyer (ship 2 (list '() '() ) 0 0))
+
+; Functions
+(define grid-list (lambda (grid) (hash->list grid #t)))
+
+(define grid-keys (lambda (grid) (hash-keys grid #t)))
+
+(define get-active-grid (lambda (x)
+                          (cond
+                            ([equal? x "Player 1"] (displayln "Player 1") P1-GRID)
+                            ([equal? x "Player 2"] (displayln "Player 2") P2-GRID)
+                            )
+                          )
+  )
+
+(define set-state-grid (lambda (co-ord state grid)
                          (let ([y (first co-ord)]
                                [x (second co-ord)])
-                           (vector-set! (hash-ref grid-ht y) (- x 1) state))))
+                           (vector-set! (hash-ref grid y) (- x 1) state))))
 
-(define get-state-grid (lambda (co-ord)
+(define get-state-grid (lambda (co-ord grid)
                          (let ([y (first co-ord)]
                                [x (second co-ord)])
-                         (vector-ref (hash-ref grid-ht y) (- x 1)))))
+                         (vector-ref (hash-ref grid y) (- x 1)))))
 
 ; Place ship directionals -> combine into expandable function later
 (define set-ship-position-east (lambda (ship-name y x lst)
@@ -109,8 +122,8 @@
                             (set-ship-position ship-name y x direction)
                             (set-ship-position-grid ship-name)
                             (cond
-                              ([equal? active-player "Player 1"] (set-ship-P1placed! ship-name #t))
-                              ([equal? active-player "Player 2"] (set-ship-P2placed! ship-name #t)))
-                            GRID))
-
-; Player Turns
+                              ([equal? active-player "Player 1"] (set-ship-P1-state! ship-name 1) (set! active-player "Player 2") P1-GRID)
+                              ([equal? active-player "Player 2"] (set-ship-P2-state! ship-name 1) (set! active-player "Player 1") P2-GRID)
+                              )
+                            )
+  )
