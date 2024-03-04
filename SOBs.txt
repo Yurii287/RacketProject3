@@ -16,3 +16,5 @@
 101: Use lists and associated functions to represent and solve simple problems in Racket. 
 
 102: Write a simple recursive function to carry out a well-defined task over lists or integers, test the function and explain how it works. 
+
+218: For a given Racket program (either one provided or one you have written), implement test cases and assertions.
