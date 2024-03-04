@@ -8,6 +8,8 @@
 (define active-player " ")
 (set! active-player "Player 1")
 
+;; CHANGE GRID TO VECTOR OF VECTORS, CREATE 2 GRIDS,
+
 ;; Grid setup
 (define GRID (list (vector 0 0 0 0 0 0 0 0)
                    (vector 0 0 0 0 0 0 0 0)
@@ -87,7 +89,6 @@
                                     )
                                   )
   )
-(trace set-ship-position-south)
 
 (define set-ship-position (lambda (ship-name y x direction)
                             (cond
