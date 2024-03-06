@@ -1,5 +1,4 @@
 #lang racket
-(require racket/trace)
 ;; Variables
 (define empty-cell 0)
 (define occupied-cell 1)
@@ -50,9 +49,14 @@
 (define destroyer (ship 2 (list '() '() ) 0 0))
 
 ; Functions
+
 (define grid-list (lambda (grid) (hash->list grid #t)))
 
 (define grid-keys (lambda (grid) (hash-keys grid #t)))
+
+(define get-row-whole (lambda (y grid) (hash-ref grid y)))
+
+(define get-row-index (for*/vector ([i (range 0 10)]) (vector i 0)))
 
 (define get-active-grid (lambda (x)
                           (cond
