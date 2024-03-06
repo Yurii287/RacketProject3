@@ -9,9 +9,9 @@
 (set! active-player "Player 1")
 
 ; Grid setup
-(define P1-GRID (for/vector ([i 8]) (make-vector 8)))
+(define P1-GRID (for/vector ([i 10]) (make-vector 10)))
 
-(define P2-GRID (for/vector ([i 8]) (make-vector 8)))
+(define P2-GRID (for/vector ([i 10]) (make-vector 10)))
 
 
 (define grid-ht-p1 (hash
@@ -22,17 +22,21 @@
                  "E" (vector-ref P1-GRID 4)
                  "F" (vector-ref P1-GRID 5)
                  "G" (vector-ref P1-GRID 6)
-                 "H" (vector-ref P1-GRID 7)))
+                 "H" (vector-ref P1-GRID 7)
+                 "I" (vector-ref P1-GRID 8)
+                 "J" (vector-ref P1-GRID 9)))
 
 (define grid-ht-p2 (hash
-                 "A" (vector-ref P1-GRID 0)
-                 "B" (vector-ref P1-GRID 1)
-                 "C" (vector-ref P1-GRID 2)
-                 "D" (vector-ref P1-GRID 3)
-                 "E" (vector-ref P1-GRID 4)
-                 "F" (vector-ref P1-GRID 5)
-                 "G" (vector-ref P1-GRID 6)
-                 "H" (vector-ref P1-GRID 7)))
+                 "A" (vector-ref P2-GRID 0)
+                 "B" (vector-ref P2-GRID 1)
+                 "C" (vector-ref P2-GRID 2)
+                 "D" (vector-ref P2-GRID 3)
+                 "E" (vector-ref P2-GRID 4)
+                 "F" (vector-ref P2-GRID 5)
+                 "G" (vector-ref P2-GRID 6)
+                 "H" (vector-ref P2-GRID 7)
+                 "I" (vector-ref P2-GRID 8)
+                 "J" (vector-ref P2-GRID 9)))
 
 
 
@@ -58,6 +62,14 @@
                           )
   )
 
+(define get-active-ht (lambda (x)
+                        (cond
+                          ([equal? x "Player 1"] grid-ht-p1)
+                          ([equal? x "Player 2"] grid-ht-p2)
+                          )
+                        )
+  )
+
 (define set-state-grid (lambda (co-ord state grid)
                          (let ([y (first co-ord)]
                                [x (second co-ord)])
@@ -81,7 +93,7 @@
 (define set-ship-position-north (lambda (ship-name y x lst)
                                   (cond
                                     ([equal? (length lst) (ship-length ship-name)] (set-ship-position! ship-name (reverse lst)))
-                                    (else (set-ship-position-north ship-name (list-ref grid-keys (+ (index-of grid-keys y) 1)) x (cons (list y x) lst)))
+                                    (else (set-ship-position-north ship-name (list-ref (grid-keys (get-active-ht active-player)) (+ (index-of (grid-keys (get-active-ht active-player)) y) 1)) x (cons (list y x) lst)))
                                     )
                                   )
   )
@@ -89,7 +101,7 @@
 (define set-ship-position-west (lambda (ship-name y x lst)
                             (cond
                               ([equal? (length lst) (ship-length ship-name)] (set-ship-position! ship-name (reverse lst)))
-                              ([> x 8] "Can not place ship here")
+                              ([> x 10] "Can not place ship here")
                               (else (set-ship-position-west ship-name y (+ x 1) (cons (list y x) lst)))
                               )
                             )
@@ -98,7 +110,7 @@
 (define set-ship-position-south (lambda (ship-name y x lst)
                                   (cond
                                     ([equal? (length lst) (ship-length ship-name)] (set-ship-position! ship-name (reverse lst)))
-                                    (else (set-ship-position-south ship-name (list-ref grid-keys (- (index-of grid-keys y) 1)) x (cons (list y x) lst)))
+                                    (else (set-ship-position-south ship-name (list-ref (grid-keys (get-active-ht active-player)) (- (index-of (grid-keys (get-active-ht active-player)) y) 1)) x (cons (list y x) lst)))
                                     )
                                   )
   )
@@ -116,7 +128,7 @@
 ; Draw to grid
 (define set-ship-position-grid (lambda (ship-name)
                              (for ([i (ship-position ship-name)])
-                               (set-state-grid i occupied-cell))))
+                               (set-state-grid i occupied-cell (get-active-ht active-player)))))
 
 (define draw-ship-to-grid (lambda (ship-name y x direction)
                             (set-ship-position ship-name y x direction)
