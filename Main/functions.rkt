@@ -40,13 +40,15 @@
 
 
 ; Ship setup
-(struct ship (length position P1-state P2-state) #:mutable)
+(struct ship (name length position P1-state P2-state) #:mutable)
 
-(define carrier (ship 5 (list '() '() '() '() '() ) 0 0))
-(define battleship (ship 4 (list '() '() '() '() ) 0 0))
-(define cruiser (ship 3 (list '() '() '() ) 0 0))
-(define submarine (ship 3 (list '() '() '() ) 0 0))
-(define destroyer (ship 2 (list '() '() ) 0 0))
+(define carrier (ship "carrier" 5 (list '() '() '() '() '() ) 0 0))
+(define battleship (ship "battleship" 4 (list '() '() '() '() ) 0 0))
+(define cruiser (ship "cruiser" 3 (list '() '() '() ) 0 0))
+(define submarine (ship "submarine" 3 (list '() '() '() ) 0 0))
+(define destroyer (ship "destroyer" 2 (list '() '() ) 0 0))
+
+(define ship-list (list (ship-name carrier) (ship-name battleship) (ship-name cruiser) (ship-name submarine) (ship-name destroyer)))
 
 ; Functions
 
