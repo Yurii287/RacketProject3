@@ -1,7 +1,6 @@
 #lang racket
 
-(provide
- square-size)
+(provide (all-defined-out))
 
 ;; Variables
 (define empty-cell 0)
@@ -60,6 +59,8 @@
 (define active-ships-p2 (set))
 
 ; Functions
+(define grid-flatten (lambda (grid) (flatten (for*/list ([i (range 0 10)]) (vector->list (list-ref (vector->list grid) i))))))
+
 (define grid-list (lambda (grid) (hash->list grid #t)))
 
 (define grid-keys (lambda (grid) (hash-keys grid #t)))
