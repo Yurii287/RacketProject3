@@ -1,0 +1,94 @@
+#lang racket/gui
+(require dyoo-while-loop)
+(range 20 420 40)
+(range 0 400 40)
+(define coords(for*/vector ([i (range 20 420 40)] [j (range 0 400 40)]) (vector i j)))
+
+(define draw-grid (λ (x-start y-start x-extent y-extent) (for* ([i (range x-start x-extent 40)] [j (range y-start y-extent 40)]) (sleep/yield 0.001)(send dc draw-rectangle i j 40 40))))
+(define draw-ship(λ (x-start y-start x-extent y-extent) (sleep/yield 0.001)(send dc set-brush "black" 'transparent)(send dc set-pen "red" 5 'solid)(send dc draw-rectangle x-start y-start x-extent y-extent)))
+(define frame (new frame% [label "Example"]
+                   [alignment '(left top)]
+                   
+                   [min-width 640]	 
+   	 	[min-height 480]))
+(define panel (new panel%  [parent frame]
+                   [alignment '(left top)]
+                   
+                 ))
+(define panel2 (new panel%  [parent frame]
+                   [alignment '(left top)]
+                   [min-height 30]
+     [min-width 100]
+     [stretchable-width #t]	 
+     [stretchable-height #f]
+                 ))
+(define bmp (make-object bitmap% 444 277))
+(send bmp load-file "/Users/thoma/Downloads/sad.bmp")
+(define my-canvas%
+  (class canvas% 
+    (define/override (on-event mouse-event) (cond ;((and (<= (send mouse-event get-x) 420) (>= (send mouse-event get-x) 20)  
+                                                  ;      (>= (send mouse-event get-y) 0)   (<= (send mouse-event get-y) 400))  (send panel set-cursor (make-object cursor% 'hand)))
+                                              
+                                                  ((equal? (send mouse-event get-event-type) 'right-down)
+                                                    
+                                                   (send dc draw-ellipse (send mouse-event get-x) (send mouse-event get-y) 20 20))
+
+                                                  ((equal? (send mouse-event get-event-type) 'left-down) (for ([i coords])
+                                                  (cond    ((and (<= (send mouse-event get-x) (+ (vector-ref i 0) 40)) (>= (send mouse-event get-x) (vector-ref i 0))  
+                                                        (>= (send mouse-event get-y) (vector-ref i 1))   (<= (send mouse-event get-y) (+ (vector-ref i 1) 40)))
+                                                            (send panel set-cursor (make-object cursor% 'hand))
+                                                            (send dc set-pen "red" 3 'solid)(send dc draw-rectangle (vector-ref i 0) (vector-ref i 1) 40 40))
+                                                           ) ))
+                                                  (else (send panel set-cursor (make-object cursor% 'arrow)))
+
+                                                  
+                                                  ;((equal? (send mouse-event get-event-type) 'motion)
+                                                   
+                                                   ;(send dc draw-text "hello" (send mouse-event get-x) (send mouse-event get-y)))
+                                                  )
+      )
+    (super-new)))
+
+(define x(new my-canvas% [parent panel]
+    
+     [paint-callback
+      (lambda (canvas dc)
+        (send dc set-brush (new brush% [color "white"]))
+        (send dc set-pen "black" 0.5 'solid)
+        (send dc set-background "red")
+        (send dc set-font (make-font #:size 15 #:family 'modern #:weight 'normal))
+        ;(send dc draw-text "SNAKE" 0 0)
+        (send dc draw-bitmap bmp 100 100 )
+        (for* ([i (range 20 420 40)] [j (range 0 400 40)]) (send dc draw-rectangle i j 40 40))
+        (for* ([i (range 440 840 40)] [j (range 0 400 40)]) (send dc draw-rectangle i j 40 40))
+        (for ([i  (range 0 400 40) ] [j (build-string 10 (lambda (i) (integer->char (+ i 97))))]) (send dc draw-text (string j) 0 i))
+        (send dc set-font (make-font #:size 20 #:family 'swiss #:weight 'bold 	#:underlined? #t))
+        (send dc set-text-foreground "medium sea green")
+        (send dc draw-text "🌊 wee" 180 40)
+        (send dc draw-text "🤖" 100 100)
+         (send dc draw-text "🧍" 200 200)
+        (send dc set-text-foreground "orange red")
+        (send dc draw-text "💥" 380 360)
+        (send dc set-font (make-font #:size 15 #:family 'modern #:weight 'normal))
+        (send dc set-text-foreground "black")
+        (send dc set-pen "black" 0.5 'solid)
+        
+        (for ([i  (range 20 460 40) ] [j (build-list 10 (lambda (x) (+ x 1)))]) (send dc draw-text (number->string j) i 400))
+        )])
+  )
+;(define editor-canvas (new editor-canvas%
+;                           (parent panel2)
+;                           (label "Editor Canvas")
+;                           (style (list 'no-hscroll 'no-vscroll)))
+;  )
+(define choice(new choice% [parent panel2]
+       [label  ""]
+       [choices '("Battleship")]
+       
+       ))
+(define text (new text%))
+(send text insert "Editor Canvas")
+;(send editor-canvas set-editor text)
+(define dc (send x get-dc))
+(send frame show #t)
+(send text get-text)
