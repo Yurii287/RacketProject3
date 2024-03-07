@@ -1,5 +1,6 @@
 #lang racket/gui
 (require dyoo-while-loop)
+(require "functions.rkt")
 (range 20 420 40)
 (range 0 400 40)
 (define coords(for*/vector ([i (range 20 420 40)] [j (range 0 400 40)]) (vector i j)))
