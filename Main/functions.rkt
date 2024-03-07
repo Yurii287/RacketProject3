@@ -1,8 +1,14 @@
 #lang racket
+
+(provide
+ square-size)
+
 ;; Variables
 (define empty-cell 0)
 (define occupied-cell 1)
 (define destroyed-cell 2)
+
+(define square-size 40)
 
 (define active-player " ")
 (set! active-player "Player 1")
@@ -50,8 +56,10 @@
 
 (define ship-list (list (ship-name carrier) (ship-name battleship) (ship-name cruiser) (ship-name submarine) (ship-name destroyer)))
 
-; Functions
+(define active-ships-p1 (set))
+(define active-ships-p2 (set))
 
+; Functions
 (define grid-list (lambda (grid) (hash->list grid #t)))
 
 (define grid-keys (lambda (grid) (hash-keys grid #t)))
@@ -85,6 +93,12 @@
                          (let ([y (first co-ord)]
                                [x (second co-ord)])
                          (vector-ref (hash-ref grid y) (- x 1)))))
+
+(define add-active-ships (lambda (ship player-set)
+                           (set-add player-set (ship-name ship))))
+
+(define remove-active-ships (lambda (ship player-set)
+                              (set-remove player-set (ship-name ship))))
 
 ; Place ship directionals -> combine into expandable function later
 (define set-ship-position-east (lambda (ship-name y x lst)
@@ -140,8 +154,8 @@
                             (set-ship-position ship-name y x direction)
                             (set-ship-position-grid ship-name)
                             (cond
-                              ([equal? active-player "Player 1"] (set-ship-P1-state! ship-name 1) (set! active-player "Player 2") P1-GRID)
-                              ([equal? active-player "Player 2"] (set-ship-P2-state! ship-name 1) (set! active-player "Player 1") P2-GRID)
+                              ([equal? active-player "Player 1"] (set-ship-P1-state! ship-name 1) (set! active-ships-p1 (add-active-ships ship-name active-ships-p1)) (set! active-player "Player 2") P1-GRID)
+                              ([equal? active-player "Player 2"] (set-ship-P2-state! ship-name 1) (set! active-ships-p2 (add-active-ships ship-name active-ships-p2)) (set! active-player "Player 1") P2-GRID)
                               )
                             )
   )
