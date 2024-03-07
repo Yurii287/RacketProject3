@@ -1,7 +1,8 @@
 #lang racket
 
 (provide (all-defined-out))
-
+(define P1-GRID (for*/vector ([i 10] [j 10]) (vector i j)))
+(define grid-flatten2 (lambda (grid) (flatten (for/list ([i (build-string 10 (lambda (i) (integer->char (+ i 97)) ))]) (vector->list (get-row-whole (string (char-upcase i)) grid))))))
 ;; Variables
 (define empty-cell 0)
 (define occupied-cell 1)
