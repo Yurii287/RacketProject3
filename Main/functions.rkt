@@ -1,8 +1,9 @@
 #lang racket
 
 (provide (all-defined-out))
-(define P1-GRID (for*/vector ([i 10] [j 10]) (vector i j)))
+
 (define grid-flatten2 (lambda (grid) (flatten (for/list ([i (build-string 10 (lambda (i) (integer->char (+ i 97)) ))]) (vector->list (get-row-whole (string (char-upcase i)) grid))))))
+
 ;; Variables
 (define empty-cell 0)
 (define occupied-cell 1)
@@ -15,8 +16,10 @@
 
 ; Grid setup
 (define P1-GRID (for/vector ([i 10]) (make-vector 10)))
+(define P1-GRID-COORDS (for*/vector ([i 10] [j 10]) (vector i j)))
 
 (define P2-GRID (for/vector ([i 10]) (make-vector 10)))
+(define P2-GRID-COORDS (for*/vector ([i 10] [j 10]) (vector i j)))
 
 
 (define grid-ht-p1 (hash
@@ -156,8 +159,8 @@
                             (set-ship-position ship-name y x direction)
                             (set-ship-position-grid ship-name)
                             (cond
-                              ([equal? active-player "Player 1"] (set-ship-P1-state! ship-name 1) (set! active-ships-p1 (add-active-ships ship-name active-ships-p1)) (set! active-player "Player 2") P1-GRID)
-                              ([equal? active-player "Player 2"] (set-ship-P2-state! ship-name 1) (set! active-ships-p2 (add-active-ships ship-name active-ships-p2)) (set! active-player "Player 1") P2-GRID)
+                              ([equal? active-player "Player 1"] (set-ship-P1-state! ship-name 1) (set! active-ships-p1 (add-active-ships ship-name active-ships-p1)) (get-active-grid active-player) (set! active-player "Player 2") P1-GRID)
+                              ([equal? active-player "Player 2"] (set-ship-P2-state! ship-name 1) (set! active-ships-p2 (add-active-ships ship-name active-ships-p2)) (get-active-grid active-player) (set! active-player "Player 1") P2-GRID)
                               )
                             )
   )
