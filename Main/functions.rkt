@@ -1,8 +1,5 @@
 #lang racket
-
 (provide (all-defined-out))
-
-(define grid-flatten2 (lambda (grid) (flatten (for/list ([i (build-string 10 (lambda (i) (integer->char (+ i 97)) ))]) (vector->list (get-row-whole (string (char-upcase i)) grid))))))
 
 ;; Variables
 (define empty-cell 0)
@@ -104,6 +101,15 @@
 
 (define remove-active-ships (lambda (ship player-set)
                               (set-remove player-set (ship-name ship))))
+
+(define return-input-int (lambda (y x index)
+                           (cond
+                             ([equal? index "x"] x)
+                             ([equal? index "y"] (index-of (grid-keys grid-ht-p1) "A"))
+                             )
+                           )
+  )
+                           
 
 ; Place ship directionals -> combine into expandable function later
 (define set-ship-position-east (lambda (ship-name y x lst)
