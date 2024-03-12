@@ -65,6 +65,9 @@
 (define active-ships-p1 (set))
 (define active-ships-p2 (set))
 
+(define destroyed-ships-p1 (set))
+(define destroyed-ships-p2 (set))
+
 ; Functions
 (define grid-flatten (lambda (grid) (flatten (for*/list ([i (range 0 10)]) (vector->list (list-ref (vector->list grid) i))))))
 
@@ -126,48 +129,34 @@
 (define return-input-int-draw (lambda (y x)
                                 (list (* 40 (return-input-int y x "y")) (* 40 (return-input-int y x "x")))))
 
-
-; Place ship directionals -> combine into expandable function later
-(define set-ship-position-east (lambda (ship-name y x lst)
+(define set-ship-position (lambda (ship-name y x direction lst)
                             (cond
-                              ([equal? (length lst) (ship-length ship-name)] (set-ship-position! ship-name (reverse lst)))
-                              ([< x 1] "Can not place ship here")
-                              (else (set-ship-position-east ship-name y (- x 1) (cons (list y x) lst)))
-                              )
-                            )
-  )
-
-(define set-ship-position-north (lambda (ship-name y x lst)
-                                  (cond
-                                    ([equal? (length lst) (ship-length ship-name)] (set-ship-position! ship-name (reverse lst)))
-                                    (else (set-ship-position-north ship-name (list-ref (grid-keys (get-active-ht active-player)) (+ (index-of (grid-keys (get-active-ht active-player)) y) 1)) x (cons (list y x) lst)))
-                                    )
+                              ([equal? direction "east"]
+                                (cond
+                                  ([equal? (length lst) (ship-length ship-name)] (set-ship-position! ship-name (reverse lst)))
+                                  ([< x 1] "Can not place ship here")
+                                  (else (set-ship-position ship-name y (- x 1) "east" (cons (list y x) lst)))
                                   )
-  )
-
-(define set-ship-position-west (lambda (ship-name y x lst)
-                            (cond
-                              ([equal? (length lst) (ship-length ship-name)] (set-ship-position! ship-name (reverse lst)))
-                              ([> x 10] "Can not place ship here")
-                              (else (set-ship-position-west ship-name y (+ x 1) (cons (list y x) lst)))
-                              )
-                            )
-  )
-
-(define set-ship-position-south (lambda (ship-name y x lst)
-                                  (cond
-                                    ([equal? (length lst) (ship-length ship-name)] (set-ship-position! ship-name (reverse lst)))
-                                    (else (set-ship-position-south ship-name (list-ref (grid-keys (get-active-ht active-player)) (- (index-of (grid-keys (get-active-ht active-player)) y) 1)) x (cons (list y x) lst)))
-                                    )
+                                )
+                              ([equal? direction "west"]
+                                (cond
+                                  ([equal? (length lst) (ship-length ship-name)] (set-ship-position! ship-name (reverse lst)))
+                                  ([> x 10] "Can not place ship here")
+                                  (else (set-ship-position ship-name y (+ x 1) "west" (cons (list y x) lst)))
                                   )
-  )
-
-(define set-ship-position (lambda (ship-name y x direction)
-                            (cond
-                              ([equal? direction "east"] (set-ship-position-east ship-name y x '()))
-                              ([equal? direction "west"] (set-ship-position-west ship-name y x '()))
-                              ([equal? direction "north"] (set-ship-position-north ship-name y x '()))
-                              ([equal? direction "south"] (set-ship-position-south ship-name y x '()))
+                               )
+                              ([equal? direction "north"]
+                                (cond
+                                  ([equal? (length lst) (ship-length ship-name)] (set-ship-position! ship-name (reverse lst)))
+                                  (else (set-ship-position ship-name (list-ref (grid-keys (get-active-ht active-player)) (+ (index-of (grid-keys (get-active-ht active-player)) y) 1)) x "north" (cons (list y x) lst)))
+                                  )
+                               )
+                              ([equal? direction "south"]
+                                (cond
+                                  ([equal? (length lst) (ship-length ship-name)] (set-ship-position! ship-name (reverse lst)))
+                                  (else (set-ship-position ship-name (list-ref (grid-keys (get-active-ht active-player)) (- (index-of (grid-keys (get-active-ht active-player)) y) 1)) x "south" (cons (list y x) lst)))
+                                  )
+                                )
                               )
                             )
   )
