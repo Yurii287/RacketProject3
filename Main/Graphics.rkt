@@ -1,10 +1,10 @@
 #lang racket/gui
 (require dyoo-while-loop)
 (require "functions.rkt")
-(range 20 420 40)
+(range 40 440 40)
 (range 0 400 40)
 (define square-size 40)
-(define coords(for*/vector ([i (range 20 420 40)] [j (range 20 420 40)]) (vector i j)))
+(define coords(for*/vector ([i (range 40 440 40)] [j (range 40 440 40)]) (vector i j)))
 
 (define draw-grid (λ (x-start y-start x-extent y-extent) (sleep/yield 0.001)(for* ([i (range x-start x-extent 40)] [j (range y-start y-extent 40)]) (send dc draw-rectangle i j 40 40))
                     (for ([i  (range y-start y-extent 40) ] [j (build-string 10 (lambda (i) (integer->char (+ i 97))))]) (send dc draw-text (string j) (- x-start 20) i))
@@ -54,7 +54,7 @@
         (send dc set-pen "black" 0.5 'solid)
         (send dc set-background "red")
         (send dc set-font (make-font #:size 11 #:family 'modern #:weight 'normal))
-        (draw-grid 20 20 420 420)
+        (draw-grid 40 40 440 440)
         (draw-grid 520 20 900 420)
         (send dc draw-text "Player 🧍" 20 0)
         (send dc set-font (make-font #:size 20 #:family 'swiss #:weight 'normal #:underlined? #f))
@@ -98,6 +98,7 @@
                         (parent panel2)
                         [stretchable-width #f]
                         (init-value "")))
+
 (define button (new button%
                     (parent panel2)
                     (label "place")

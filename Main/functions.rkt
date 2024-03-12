@@ -11,6 +11,12 @@
 (define active-player " ")
 (set! active-player "Player 1")
 
+; 0 = place ships
+; 1 = destroy ships
+; 2 = game over
+(define game-state null)
+(set! game-state 0)
+
 ; Grid setup
 (define P1-GRID (for/vector ([i 10]) (make-vector 10)))
 (define P1-GRID-COORDS (for*/vector ([i 10] [j 10]) (vector i j)))
@@ -104,12 +110,22 @@
 
 (define return-input-int (lambda (y x index)
                            (cond
-                             ([equal? index "x"] x)
-                             ([equal? index "y"] (index-of (grid-keys grid-ht-p1) "A"))
+                             ([equal? index "x"]
+                              (cond
+                                ([equal? x 10] (+ x 1))
+                                (else x)))
+                             ([equal? index "y"]
+                              (cond
+                                ([equal? y "J"] (+ 2 (index-of (grid-keys grid-ht-p1) y)))
+                                (else (+ 1 (index-of (grid-keys grid-ht-p1) y))))
+                              )
                              )
                            )
   )
-                           
+
+(define return-input-int-draw (lambda (y x)
+                                (list (* 40 (return-input-int y x "y")) (* 40 (return-input-int y x "x")))))
+
 
 ; Place ship directionals -> combine into expandable function later
 (define set-ship-position-east (lambda (ship-name y x lst)
