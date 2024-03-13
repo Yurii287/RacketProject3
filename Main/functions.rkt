@@ -8,7 +8,7 @@
 
 (define square-size 40)
 
-(define active-player " ")
+(define active-player null)
 (set! active-player "Player 1")
 
 ; 0 = place ships
@@ -62,13 +62,15 @@
 
 (define ship-list (list (ship-name carrier) (ship-name battleship) (ship-name cruiser) (ship-name submarine) (ship-name destroyer)))
 
-(define active-ships-p1 (set))
-(define active-ships-p2 (set))
+(define active-ships-p1 null)
+(set! active-ships-p1 (list))
 
-(define destroyed-ships-p1 (set))
-(define destroyed-ships-p2 (set))
+(define active-ships-p2 null)
 
-; Functions
+(define destroyed-ships-p1 null)
+(define destroyed-ships-p2 null)
+
+; Grid Functions
 (define grid-flatten (lambda (grid) (flatten (for*/list ([i (range 0 10)]) (vector->list (list-ref (vector->list grid) i))))))
 
 (define grid-list (lambda (grid) (hash->list grid #t)))
@@ -105,12 +107,6 @@
                                [x (second co-ord)])
                          (vector-ref (hash-ref grid y) (- x 1)))))
 
-(define add-active-ships (lambda (ship player-set)
-                           (set-add player-set (ship-name ship))))
-
-(define remove-active-ships (lambda (ship player-set)
-                              (set-remove player-set (ship-name ship))))
-
 (define return-input-int (lambda (y x index)
                            (cond
                              ([equal? index "x"]
@@ -126,9 +122,11 @@
                            )
   )
 
+;input: y-coord, x-coord: example -> "A" 1 = (40,40); "B" 4 = (80, 160)
 (define return-input-int-draw (lambda (y x)
                                 (list (* 40 (return-input-int y x "y")) (* 40 (return-input-int y x "x")))))
 
+; Ship Functions
 (define set-ship-position (lambda (ship-name y x direction lst)
                             (cond
                               ([equal? direction "east"]
@@ -161,17 +159,25 @@
                             )
   )
 
-; Draw to grid
+(define add-ship-list (lambda (ship-name active-list)
+                           (set! active-list (cons ship-name active-list))))
+
+(define remove-ship-list (lambda (ship-name active-list)
+                           (set! active-list (remove ship-name active-list))))
+
+; Draw Functions
 (define set-ship-position-grid (lambda (ship-name)
                              (for ([i (ship-position ship-name)])
                                (set-state-grid i occupied-cell (get-active-ht active-player)))))
 
 (define draw-ship-to-grid (lambda (ship-name y x direction)
-                            (set-ship-position ship-name y x direction)
+                            (set-ship-position ship-name y x direction '())
                             (set-ship-position-grid ship-name)
                             (cond
-                              ([equal? active-player "Player 1"] (set-ship-P1-state! ship-name 1) (set! active-ships-p1 (add-active-ships ship-name active-ships-p1)) (get-active-grid active-player) (set! active-player "Player 2") P1-GRID)
-                              ([equal? active-player "Player 2"] (set-ship-P2-state! ship-name 1) (set! active-ships-p2 (add-active-ships ship-name active-ships-p2)) (get-active-grid active-player) (set! active-player "Player 1") P2-GRID)
+                              ([equal? active-player "Player 1"] (set-ship-P1-state! ship-name 1) (get-active-grid active-player) (set! active-player "Player 2") P1-GRID)
+                              ([equal? active-player "Player 2"] (set-ship-P2-state! ship-name 1) (get-active-grid active-player) (set! active-player "Player 1") P2-GRID)
                               )
                             )
   )
+
+; Shoot Functions
