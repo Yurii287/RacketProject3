@@ -60,11 +60,10 @@
 (define submarine (ship "submarine" 3 (list '() '() '() ) 0 0 (* 40 3)))
 (define destroyer (ship "destroyer" 2 (list '() '() ) 0 0 (* 40 2)))
 
-; create list of ship classes
-; ship-list as for/list for names
+(define ship-list (list carrier battleship cruiser submarine destroyer))
+(define ship-list-strings (for/list ([i ship-list]) (ship-name i)))
 
-(define ship-list (list (ship-name carrier) (ship-name battleship) (ship-name cruiser) (ship-name submarine) (ship-name destroyer)))
-
+  
 (define active-ships-p1 null)
 (set! active-ships-p1 (list))
 
@@ -188,7 +187,6 @@
   )
 
 ; Game State Functions
-
 (define change-game-state (lambda ()
                             (cond
                               ([and (equal? (length active-ships-p1) 5) (equal? (length active-ships-p2) 5)](set! game-state (+ game-state 1)))
