@@ -11,6 +11,7 @@
                     (for ([i  (range x-start x-extent 40) ] [j (build-list 10 (lambda (x) (+ x 1)))]) (send dc draw-text (number->string j) i y-extent))))
 (define draw-ship(λ (x-start y-start x-extent y-extent direction) (sleep/yield 0.001)(cond ((equal? direction "east")(send dc set-brush "black" 'transparent)(send dc set-pen "red" 5 'solid)(send dc draw-rectangle x-start y-start x-extent y-extent))
                                                                         ((equal? direction "south")(send dc set-brush "black" 'transparent)(send dc set-pen "red" 5 'solid)(send dc draw-rectangle x-start y-start y-extent x-extent))
+                                                                        ((equal? direction "east")(send dc set-brush "black" 'transparent)(send dc set-pen "red" 5 'solid)(send dc draw-rectangle x-start y-start x-extent y-extent))
                                                                         ((equal? direction "west")(send dc set-brush "black" 'transparent)(send dc set-pen "red" 5 'solid)(send dc draw-rectangle (- x-start (- x-extent 40)) y-start x-extent y-extent))
                                                                         )))
 (define frame (new frame% [label "Example"]
