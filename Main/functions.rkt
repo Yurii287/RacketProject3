@@ -52,13 +52,13 @@
 
 
 ; Ship setup
-(struct ship (name length position P1-state P2-state) #:mutable)
+(struct ship (name length position P1-state P2-state cumulative) #:mutable)
 
-(define carrier (ship "carrier" 5 (list '() '() '() '() '() ) 0 0))
-(define battleship (ship "battleship" 4 (list '() '() '() '() ) 0 0))
-(define cruiser (ship "cruiser" 3 (list '() '() '() ) 0 0))
-(define submarine (ship "submarine" 3 (list '() '() '() ) 0 0))
-(define destroyer (ship "destroyer" 2 (list '() '() ) 0 0))
+(define carrier (ship "carrier" 5 (list '() '() '() '() '() ) 0 0 (* 40 5)))
+(define battleship (ship "battleship" 4 (list '() '() '() '() ) 0 0 (* 40 4)))
+(define cruiser (ship "cruiser" 3 (list '() '() '() ) 0 0 (* 40 3)))
+(define submarine (ship "submarine" 3 (list '() '() '() ) 0 0 (* 40 3)))
+(define destroyer (ship "destroyer" 2 (list '() '() ) 0 0 (* 40 2)))
 
 (define ship-list (list (ship-name carrier) (ship-name battleship) (ship-name cruiser) (ship-name submarine) (ship-name destroyer)))
 
@@ -66,9 +66,13 @@
 (set! active-ships-p1 (list))
 
 (define active-ships-p2 null)
+(set! active-ships-p2 (list))
 
 (define destroyed-ships-p1 null)
+(set! destroyed-ships-p1 (list))
+
 (define destroyed-ships-p2 null)
+(set! destroyed-ships-p2 (list))
 
 ; Grid Functions
 (define grid-flatten (lambda (grid) (flatten (for*/list ([i (range 0 10)]) (vector->list (list-ref (vector->list grid) i))))))
@@ -180,4 +184,18 @@
                             )
   )
 
+; Game State Functions
+
+(define change-game-state (lambda ()
+                            (cond
+                              ([and (equal? (length active-ships-p1) 5) (equal? (length active-ships-p2) 5)](set! game-state (+ game-state 1)))
+                              ([or (equal? (length destroyed-ships-p1) 5) (equal? (length destroyed-ships-p2) 5)] (set! game-state (+ game-state 1)) (won-game-state active-player))
+                              )
+                            )
+  )
+
+(define won-game-state (lambda (player) (cond
+                                    ([equal? game-state 2] (displayln "Game Won") player))))
+
 ; Shoot Functions
+
