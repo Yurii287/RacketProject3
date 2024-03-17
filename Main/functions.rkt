@@ -52,13 +52,13 @@
 
 
 ; Ship setup
-(struct ship (name length position P1-state P2-state cumulative) #:mutable)
+(struct ship (name length P1-position P2-position P1-state P2-state cumulative) #:mutable)
 
-(define carrier (ship "carrier" 5 (list '() '() '() '() '() ) 0 0 (* 40 5)))
-(define battleship (ship "battleship" 4 (list '() '() '() '() ) 0 0 (* 40 4)))
-(define cruiser (ship "cruiser" 3 (list '() '() '() ) 0 0 (* 40 3)))
-(define submarine (ship "submarine" 3 (list '() '() '() ) 0 0 (* 40 3)))
-(define destroyer (ship "destroyer" 2 (list '() '() ) 0 0 (* 40 2)))
+(define carrier (ship "carrier" 5 (list '() '() '() '() '() ) (list '() '() '() '() '() ) 0 0 (* 40 5)))
+(define battleship (ship "battleship" 4 (list '() '() '() '() ) (list '() '() '() '() ) 0 0 (* 40 4)))
+(define cruiser (ship "cruiser" 3 (list '() '() '() ) (list '() '() '() ) 0 0 (* 40 3)))
+(define submarine (ship "submarine" 3 (list '() '() '() ) (list '() '() '() ) 0 0 (* 40 3)))
+(define destroyer (ship "destroyer" 2 (list '() '() ) (list '() '() ) 0 0 (* 40 2)))
 
 (define ship-list (list carrier battleship cruiser submarine destroyer))
 (define ship-list-strings (for/list ([i ship-list]) (ship-name i)))
@@ -103,10 +103,10 @@
                         )
   )
 
-(define set-state-grid (lambda (co-ord state grid)
+(define set-state-grid (lambda (co-ord state grid-hash)
                          (let ([y (first co-ord)]
                                [x (second co-ord)])
-                           (vector-set! (hash-ref grid y) (- x 1) state))))
+                           (vector-set! (hash-ref grid-hash y) (- x 1) state))))
 
 (define get-state-grid (lambda (co-ord grid)
                          (let ([y (first co-ord)]
@@ -137,27 +137,35 @@
                             (cond
                               ([equal? direction "east"]
                                 (cond
-                                  ([equal? (length lst) (ship-length ship-name)] (set-ship-position! ship-name (reverse lst)))
+                                  ([equal? (length lst) (ship-length ship-name)] (cond
+                                                                                   ([equal? active-player "Player 1"] (set-ship-P1-position! ship-name (reverse lst)))
+                                                                                   ([equal? active-player "Player 2"] (set-ship-P2-position! ship-name (reverse lst)))))
                                   ([< x 1] "Can not place ship here")
                                   (else (set-ship-position ship-name y (- x 1) "east" (cons (list y x) lst)))
                                   )
                                 )
                               ([equal? direction "west"]
                                 (cond
-                                  ([equal? (length lst) (ship-length ship-name)] (set-ship-position! ship-name (reverse lst)))
+                                  ([equal? (length lst) (ship-length ship-name)] (cond
+                                                                                   ([equal? active-player "Player 1"] (set-ship-P1-position! ship-name (reverse lst)))
+                                                                                   ([equal? active-player "Player 2"] (set-ship-P2-position! ship-name (reverse lst)))))
                                   ([> x 10] "Can not place ship here")
                                   (else (set-ship-position ship-name y (+ x 1) "west" (cons (list y x) lst)))
                                   )
                                )
                               ([equal? direction "north"]
                                 (cond
-                                  ([equal? (length lst) (ship-length ship-name)] (set-ship-position! ship-name (reverse lst)))
+                                  ([equal? (length lst) (ship-length ship-name)] (cond
+                                                                                   ([equal? active-player "Player 1"] (set-ship-P1-position! ship-name (reverse lst)))
+                                                                                   ([equal? active-player "Player 2"] (set-ship-P2-position! ship-name (reverse lst)))))
                                   (else (set-ship-position ship-name (list-ref (grid-keys (get-active-ht active-player)) (+ (index-of (grid-keys (get-active-ht active-player)) y) 1)) x "north" (cons (list y x) lst)))
                                   )
                                )
                               ([equal? direction "south"]
                                 (cond
-                                  ([equal? (length lst) (ship-length ship-name)] (set-ship-position! ship-name (reverse lst)))
+                                  ([equal? (length lst) (ship-length ship-name)] (cond
+                                                                                   ([equal? active-player "Player 1"] (set-ship-P1-position! ship-name (reverse lst)))
+                                                                                   ([equal? active-player "Player 2"] (set-ship-P2-position! ship-name (reverse lst)))))
                                   (else (set-ship-position ship-name (list-ref (grid-keys (get-active-ht active-player)) (- (index-of (grid-keys (get-active-ht active-player)) y) 1)) x "south" (cons (list y x) lst)))
                                   )
                                 )
@@ -172,16 +180,15 @@
                            (set! active-list (remove ship-name active-list))))
 
 ; Draw Functions
-(define set-ship-position-grid (lambda (ship-name)
-                             (for ([i (ship-position ship-name)])
+(define set-ship-position-grid (lambda (ship-name position-arg)
+                             (for ([i position-arg])
                                (set-state-grid i occupied-cell (get-active-ht active-player)))))
 
 (define draw-ship-to-grid (lambda (ship-name y x direction)
                             (set-ship-position ship-name y x direction '())
-                            (set-ship-position-grid ship-name)
                             (cond
-                              ([equal? active-player "Player 1"] (set-ship-P1-state! ship-name 1) (get-active-grid active-player) (set! active-player "Player 2") P1-GRID)
-                              ([equal? active-player "Player 2"] (set-ship-P2-state! ship-name 1) (get-active-grid active-player) (set! active-player "Player 1") P2-GRID)
+                              ([equal? active-player "Player 1"] (set-ship-position-grid ship-name (ship-P1-position ship-name)) (set-ship-P1-state! ship-name 1) (get-active-grid active-player) (set! active-player "Player 2") P1-GRID)
+                              ([equal? active-player "Player 2"] (set-ship-position-grid ship-name (ship-P1-position ship-name)) (set-ship-P2-state! ship-name 1) (get-active-grid active-player) (set! active-player "Player 1") P2-GRID)
                               )
                             )
   )
@@ -199,4 +206,9 @@
                                     ([equal? game-state 2] (displayln "Game Won") player))))
 
 ; Shoot Functions
+(define shoot (lambda (y x grid-hash)
+                (set-state-grid (list y x) destroyed-cell grid-hash)))
 
+
+                         
+                         
