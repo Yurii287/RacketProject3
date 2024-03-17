@@ -186,10 +186,10 @@
 
 (define draw-ship-to-grid (lambda (ship-name y x direction)
                             (set-ship-position ship-name y x direction '())
+                            (change-game-state)
                             (cond
                               ([equal? active-player "Player 1"] (set-ship-position-grid ship-name (ship-P1-position ship-name)) (set-ship-P1-state! ship-name 1) (get-active-grid active-player) (set! active-player "Player 2") P1-GRID)
-                              ([equal? active-player "Player 2"] (set-ship-position-grid ship-name (ship-P1-position ship-name)) (set-ship-P2-state! ship-name 1) (get-active-grid active-player) (set! active-player "Player 1") P2-GRID)
-                              )
+                              ([equal? active-player "Player 2"] (set-ship-position-grid ship-name (ship-P1-position ship-name)) (set-ship-P2-state! ship-name 1) (get-active-grid active-player) (set! active-player "Player 1") P2-GRID))
                             )
   )
 
@@ -209,6 +209,4 @@
 (define shoot (lambda (y x grid-hash)
                 (set-state-grid (list y x) destroyed-cell grid-hash)))
 
-
-                         
-                         
+;(define ship-hit-check (lambda (y x)
