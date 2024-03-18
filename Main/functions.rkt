@@ -184,6 +184,7 @@
                              (for ([i position-arg])
                                (set-state-grid i occupied-cell (get-active-ht active-player)))))
 
+;; get working with toms, button thing
 (define draw-ship-to-grid (lambda (ship-name y x direction)
                             (set-ship-position ship-name y x direction '())
                             (change-game-state)
