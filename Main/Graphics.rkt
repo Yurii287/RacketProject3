@@ -6,7 +6,6 @@
 (range 40 440 40)
 (range 0 400 40)
 
-(define square-size 40)
 (define state 0)
 (define coords(for*/vector ([i (range 520 900 40)] [j (range 40 420 40)]) (vector i j)))
 
@@ -36,8 +35,11 @@
      [stretchable-width #t]	 
      [stretchable-height #f]
                  ))
+
 (define bmp (make-object bitmap% 444 277))
+
 (send bmp load-file "/Users/thoma/Downloads/sad.bmp")
+
 (define my-canvas%
   (class canvas% 
     (define/override (on-event mouse-event) (cond ((equal? (send mouse-event get-event-type) 'right-down)
@@ -72,17 +74,16 @@
         (send dc set-text-foreground "orange red")
         (send dc set-font (make-font #:size 15 #:family 'swiss #:weight 'normal 	#:underlined? #f))
         (send dc draw-text "💥" 380 360)
-        (for/list ([i (append (list "Player 1") ship-list)] [j (range 480 680 20)]) (send dc draw-text i 20 j))
+        (for/list ([i (append (list "Player 1") ship-list-strings)] [j (range 480 680 20)]) (send dc draw-text i 20 j))
         (send dc set-font (make-font #:size 15 #:family 'modern #:weight 'normal))
         (send dc set-text-foreground "black")
         (send dc set-pen "black" 0.5 'solid)
         )])
   )
 
-(define ship_choices ship-list)
 (define choice(new choice% [parent panel2]
        [label  ""]
-       [choices ship_choices]
+       [choices ship-list-strings]
        [min-width 50]	 
    	 	[min-height 30]
        	[stretchable-width #f]	 
@@ -107,25 +108,31 @@
 (define button (new button%
                     (parent panel2)
                     (label "place")
-                    (callback (lambda (button event) (cond ((equal? (send choice get-string-selection) "carrier")(send choice delete (send choice get-selection))(draw-ship
+                    (callback (lambda (button event) (cond
+                                                       ((equal? (send choice get-string-selection) "carrier")
+                                                            (send choice delete (send choice get-selection))
+                                                            (draw-ship
                                                              (list-ref (return-input-int-draw (string (string-ref (send text-field get-value) 0)) (string->number (string (string-ref (send text-field get-value) 1)))) 1)
                                                              (list-ref (return-input-int-draw (string (string-ref (send text-field get-value) 0)) (string->number (string (string-ref (send text-field get-value) 1)))) 0)
                                                              (ship-cumulative carrier) square-size (send choice2 get-string-selection)))
-                                                           ((equal? (send choice get-string-selection) "battleship")
+                                                           
+                                                       ((equal? (send choice get-string-selection) "battleship")
                                                             (send choice delete (send choice get-selection))
                                                             (send choice set-selection (random (send choice get-number)))
                                                             (draw-ship
                                                              (list-ref (return-input-int-draw (string (string-ref (send text-field get-value) 0)) (string->number (string (string-ref (send text-field get-value) 1)))) 1)
                                                              (list-ref (return-input-int-draw (string (string-ref (send text-field get-value) 0)) (string->number (string (string-ref (send text-field get-value) 1)))) 0)
                                                              (ship-cumulative battleship) square-size (send choice2 get-string-selection)))
-                                                           ((equal? (send choice get-string-selection) "cruiser")
+                                                           
+                                                       ((equal? (send choice get-string-selection) "cruiser")
                                                             (send choice delete (send choice get-selection))
                                                             (send choice set-selection (random (send choice get-number)))
                                                             (draw-ship
                                                              (list-ref (return-input-int-draw (string (string-ref (send text-field get-value) 0)) (string->number (string (string-ref (send text-field get-value) 1)))) 1)
                                                              (list-ref (return-input-int-draw (string (string-ref (send text-field get-value) 0)) (string->number (string (string-ref (send text-field get-value) 1)))) 0)
                                                              (ship-cumulative cruiser) square-size (send choice2 get-string-selection)))
-                                                           ((equal? (send choice get-string-selection) "submarine")
+                                                           
+                                                       ((equal? (send choice get-string-selection) "submarine")
                                                             (send choice delete (send choice get-selection))
                                                             (send choice set-selection (random (send choice get-number)))
                                                             (draw-ship
@@ -133,6 +140,7 @@
                                                              (list-ref (return-input-int-draw (string (string-ref (send text-field get-value) 0)) (string->number (string (string-ref (send text-field get-value) 1)))) 0)
                                                              (ship-cumulative submarine) square-size (send choice2 get-string-selection)))
                                                            )))))
+
 (filter (λ (x) (not (equal? x #\space))) (string->list (send text-field get-value)))
 ;(string-ref (list->string (filter (λ (x) (not (equal? x #\space))) (string->list (send text-field get-value)))) 0)
 (define text (new text%))

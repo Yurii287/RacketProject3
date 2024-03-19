@@ -91,17 +91,13 @@
                           (cond
                             ([equal? x "Player 1"] (displayln "Player 1") P1-GRID)
                             ([equal? x "Player 2"] (displayln "Player 2") P2-GRID)
-                            )
-                          )
-  )
+                            )))
 
 (define get-active-ht (lambda (x)
                         (cond
                           ([equal? x "Player 1"] grid-ht-p1)
                           ([equal? x "Player 2"] grid-ht-p2)
-                          )
-                        )
-  )
+                          )))
 
 (define set-state-grid (lambda (co-ord state grid-hash)
                          (let ([y (first co-ord)]
@@ -124,9 +120,7 @@
                                 ([equal? y "J"] (+ 2 (index-of (grid-keys grid-ht-p1) y)))
                                 (else (+ 1 (index-of (grid-keys grid-ht-p1) y))))
                               )
-                             )
-                           )
-  )
+                             )))
 
 ;input: y-coord, x-coord: example -> "A" 1 = (40,40); "B" 4 = (80, 160)
 (define return-input-int-draw (lambda (y x)
@@ -169,9 +163,7 @@
                                   (else (set-ship-position ship-name (list-ref (grid-keys (get-active-ht active-player)) (- (index-of (grid-keys (get-active-ht active-player)) y) 1)) x "south" (cons (list y x) lst)))
                                   )
                                 )
-                              )
-                            )
-  )
+                              )))
 
 (define add-ship-list (lambda (ship-name active-list)
                            (set! active-list (cons ship-name active-list))))
@@ -184,24 +176,20 @@
                              (for ([i position-arg])
                                (set-state-grid i occupied-cell (get-active-ht active-player)))))
 
-;; get-string-select
 (define draw-ship-to-grid (lambda (ship-name y x direction)
                             (set-ship-position ship-name y x direction '())
                             (change-game-state)
                             (cond
                               ([equal? active-player "Player 1"] (set-ship-position-grid ship-name (ship-P1-position ship-name)) (set-ship-P1-state! ship-name 1) (get-active-grid active-player) (set! active-player "Player 2") P1-GRID)
                               ([equal? active-player "Player 2"] (set-ship-position-grid ship-name (ship-P1-position ship-name)) (set-ship-P2-state! ship-name 1) (get-active-grid active-player) (set! active-player "Player 1") P2-GRID))
-                            )
-  )
+                            ))
 
 ; Game State Functions
 (define change-game-state (lambda ()
                             (cond
                               ([and (equal? (length active-ships-p1) 5) (equal? (length active-ships-p2) 5)](set! game-state (+ game-state 1)))
                               ([or (equal? (length destroyed-ships-p1) 5) (equal? (length destroyed-ships-p2) 5)] (set! game-state (+ game-state 1)) (won-game-state active-player))
-                              )
-                            )
-  )
+                              )))
 
 (define won-game-state (lambda (player) (cond
                                     ([equal? game-state 2] (displayln "Game Won") player))))
@@ -210,4 +198,11 @@
 (define shoot (lambda (y x grid-hash)
                 (set-state-grid (list y x) destroyed-cell grid-hash)))
 
-;(define ship-hit-check (lambda (y x)
+(define ship-hit-check (lambda (y x lst)
+                         (cond
+                           ([empty? lst] "Miss")
+                           ([and (equal? y (car (first lst))) (equal? x (cadr (first lst)))] "Ship Hit")
+                           (else (ship-hit-check y x (rest lst)))
+                           )))
+
+; Computer/Player 2 Functions
