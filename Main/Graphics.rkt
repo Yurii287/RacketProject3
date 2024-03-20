@@ -7,6 +7,7 @@
 (range 0 400 40)
 
 (define state 0)
+(define button_state 0)
 (define coords(for*/vector ([i (range 520 900 40)] [j (range 40 420 40)]) (vector i j)))
 
 (define draw-grid (λ (x-start y-start x-extent y-extent player) (sleep/yield 0.001)
@@ -23,12 +24,12 @@
                                                                         )))
 
 ;deletes all items in panel2 and creates new ones
-(define murder_suicide(λ ()
+(define murder(λ ()
                         (send panel2 delete-child button)
                         (send panel2 delete-child choice)
                         (send panel2 delete-child choice2)
                          (send text-field set-label "hello")
-                        
+                        (set! button_state 1)
                          ))
 (define frame (new frame% [label "Example"]
                    [alignment '(left top)]
@@ -48,8 +49,6 @@
      [stretchable-width #t]	 
      [stretchable-height #f]
                  ))
-(define bmp (make-object bitmap% 444 277))
-(send bmp load-file "/Users/thoma/Downloads/sad.bmp")
 (define my-canvas%
   (class canvas% 
     (define/override (on-event mouse-event) (cond ((equal? (send mouse-event get-event-type) 'right-down)
@@ -141,7 +140,7 @@
 (define button (new button%
                     (parent panel2)
                     (label "place")
-                    (callback (lambda (button event) (cond ((equal? (send choice get-string-selection) "carrier")(send choice delete (send choice get-selection))(draw-ship
+                    (callback (lambda (button event) (cond ((equal? button_state 0)(cond ((equal? (send choice get-string-selection) "carrier")(send choice delete (send choice get-selection))(draw-ship
                                                              (list-ref (return-input-int-draw (string (string-ref (send text-field get-value) 0)) (string->number (string (string-ref (send text-field get-value) 1)))) 1)
                                                              (list-ref (return-input-int-draw (string (string-ref (send text-field get-value) 0)) (string->number (string (string-ref (send text-field get-value) 1)))) 0)
                                                              (ship-cumulative carrier) square-size (send choice2 get-string-selection)))
@@ -173,7 +172,8 @@
                                                              (list-ref (return-input-int-draw (string (string-ref (send text-field get-value) 0)) (string->number (string (string-ref (send text-field get-value) 1)))) 1)
                                                              (list-ref (return-input-int-draw (string (string-ref (send text-field get-value) 0)) (string->number (string (string-ref (send text-field get-value) 1)))) 0)
                                                              (ship-cumulative destroyer) square-size (send choice2 get-string-selection)))
-                                                           )))))
+                                                           )
+                                                                                   ((equal? button_state 1))))))))
 (filter (λ (x) (not (equal? x #\space))) (string->list (send text-field get-value)))
 ;(string-ref (list->string (filter (λ (x) (not (equal? x #\space))) (string->list (send text-field get-value)))) 0)
 (define text (new text%))
