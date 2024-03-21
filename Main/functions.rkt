@@ -1,6 +1,6 @@
 #lang racket
 (provide (all-defined-out))
-
+(require racket/trace)
 ;; Variables
 (define empty-cell 0)
 (define occupied-cell 1)
@@ -181,9 +181,10 @@
                             (set-ship-position ship-name y x direction '())
                             (change-game-state)
                             (cond
-                              ([equal? active-player "Player 1"] (set! active-ships-p1 (cons ship-name active-ships-p1)) (set-ship-position-grid ship-name (ship-P1-position ship-name)) (set-ship-P1-state! ship-name 1) (get-active-grid active-player)  P1-GRID)
-                              ([equal? active-player "Player 2"] (set! active-ships-p1 (cons ship-name active-ships-p2)) (set-ship-position-grid ship-name (ship-P1-position ship-name)) (set-ship-P2-state! ship-name 1) (get-active-grid active-player)  P2-GRID))
-                            ))
+                              ([equal? active-player "Player 1"] (set! active-ships-p1 (cons ship-name active-ships-p1)) (set-ship-position-grid ship-name (ship-P1-position ship-name)) (set-ship-P1-state! ship-name 1) (get-active-grid active-player) (change-active-player) P1-GRID)
+                              ([equal? active-player "Player 2"] (set! active-ships-p2 (cons ship-name active-ships-p2)) (set-ship-position-grid ship-name (ship-P2-position ship-name)) (set-ship-P2-state! ship-name 1) (get-active-grid active-player) (change-active-player) P2-GRID))
+                            )
+  )
 
 ; Game State Functions
 (define change-game-state (lambda ()
@@ -201,15 +202,37 @@
                                  )))
 
 ; Shoot Functions
-(define shoot (lambda (y x grid-hash)
-                (set-state-grid (list y x) destroyed-cell grid-hash)))
-
-(define ship-hit-check (lambda (y x lst)
-                         (cond
-                           ([empty? lst] "Miss")
-                           ([and (equal? active-player "Player 1") (equal? y (caar (ship-P1-position (first lst)))) (equal? x (cadar (ship-P1-position (first lst))))] "Ship Hit")
-                           ([and (equal? active-player "Player 2") (equal? y (caar (ship-P2-position (first lst)))) (equal? x (cadar (ship-P2-position (first lst))))] "Ship Hit")
-                           (else (ship-hit-check y x (rest lst)))
-                           )))
+(define shoot (lambda (y x player)
+                (cond
+                  ([equal? player "Player 1"]
+                   (let ([active-hash grid-ht-p1]
+                         [active-lst active-ships-p1])
+                     (set-state-grid (list y x) destroyed-cell active-hash)
+                     (ship-hit-check y x active-lst)
+                     ))
+                   
+                  ([equal? player "Player 2"]
+                   (let ([active-hash grid-ht-p2]
+                         [active-lst active-ships-p2])
+                     (set-state-grid (list y x) destroyed-cell active-hash)
+                     (ship-hit-check y x active-lst)
+                     ))
+                  )
+                )
+  )
+;; fix this
+(define ship-hit-check (lambda (y x active-lst)
+                         (let ([pos-lst (ship-P1-position (first active-lst))])
+                           (cond
+                             ([empty? active-lst] "Miss")
+                             ([empty? pos-lst] (ship-hit-check y x (rest active-lst)))
+                             ([and (equal? active-player "Player 1") (equal? y (caar pos-lst)) (equal? x (cadar pos-lst))] "Ship Hit")
+                             (else (ship-hit-check y x (rest active-lst)))
+                             )
+                           )
+                         )
+  )
+                             
+                           
 
 ; Computer/Player 2 Functions
