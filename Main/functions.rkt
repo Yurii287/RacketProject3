@@ -135,7 +135,7 @@
                                                                                    ([equal? active-player "Player 1"] (set-ship-P1-position! ship-name (reverse lst)))
                                                                                    ([equal? active-player "Player 2"] (set-ship-P2-position! ship-name (reverse lst)))))
                                   ([< x 1] "Can not place ship here")
-                                  (else (set-ship-position ship-name y (+ x 1) "east" (cons (list y x) lst)))
+                                  (else (set-ship-position ship-name y (+ x 1) "west" (cons (list y x) lst)))
                                   )
                                 )
                               ([equal? direction "east"]
@@ -144,7 +144,7 @@
                                                                                    ([equal? active-player "Player 1"] (set-ship-P1-position! ship-name (reverse lst)))
                                                                                    ([equal? active-player "Player 2"] (set-ship-P2-position! ship-name (reverse lst)))))
                                   ([> x 10] "Can not place ship here")
-                                  (else (set-ship-position ship-name y (- x 1) "west" (cons (list y x) lst)))
+                                  (else (set-ship-position ship-name y (- x 1) "east" (cons (list y x) lst)))
                                   )
                                )
                               ([equal? direction "south"]
@@ -152,7 +152,7 @@
                                   ([equal? (length lst) (ship-length ship-name)] (cond
                                                                                    ([equal? active-player "Player 1"] (set-ship-P1-position! ship-name (reverse lst)))
                                                                                    ([equal? active-player "Player 2"] (set-ship-P2-position! ship-name (reverse lst)))))
-                                  (else (set-ship-position ship-name (list-ref (grid-keys (get-active-ht active-player)) (- (index-of (grid-keys (get-active-ht active-player)) y) 1)) x "north" (cons (list y x) lst)))
+                                  (else (set-ship-position ship-name (list-ref (grid-keys (get-active-ht active-player)) (- (index-of (grid-keys (get-active-ht active-player)) y) 1)) x "south" (cons (list y x) lst)))
                                   )
                                )
                               ([equal? direction "north"]
@@ -160,7 +160,7 @@
                                   ([equal? (length lst) (ship-length ship-name)] (cond
                                                                                    ([equal? active-player "Player 1"] (set-ship-P1-position! ship-name (reverse lst)))
                                                                                    ([equal? active-player "Player 2"] (set-ship-P2-position! ship-name (reverse lst)))))
-                                  (else (set-ship-position ship-name (list-ref (grid-keys (get-active-ht active-player)) (+ (index-of (grid-keys (get-active-ht active-player)) y) 1)) x "south" (cons (list y x) lst)))
+                                  (else (set-ship-position ship-name (list-ref (grid-keys (get-active-ht active-player)) (+ (index-of (grid-keys (get-active-ht active-player)) y) 1)) x "north" (cons (list y x) lst)))
                                   )
                                 )
                               )))
@@ -220,7 +220,8 @@
                   )
                 )
   )
-;; fix this
+;; fix this - (ship-P1-positions (first active-ships-p1))
+;; create list of all active positions to iterate through, use for loop or create new variable
 (define ship-hit-check (lambda (y x active-lst)
                          (let ([pos-lst (ship-P1-position (first active-lst))])
                            (cond
@@ -231,8 +232,6 @@
                              )
                            )
                          )
-  )
-                             
-                           
+  )                        
 
 ; Computer/Player 2 Functions
