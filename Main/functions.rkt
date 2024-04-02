@@ -1,6 +1,14 @@
 #lang racket
+;; to be fixed
+;; cannot place anything in "B" due to hashmap referencing.
+;; cannot place anything in "J" for same reason.
+;; fix ship-hit-check
+;; - (cadaar (all-active-pos)) & (caaar (all-active-pos))
+
+
 (provide (all-defined-out))
 (require racket/trace)
+
 ;; Variables
 (define empty-cell 0)
 (define occupied-cell 1)
@@ -122,7 +130,6 @@
                               )
                              )))
 
-;input: y-coord, x-coord: example -> "A" 1 = (40,40); "B" 4 = (80, 160)
 (define return-input-int-draw (lambda (y x)
                                 (list (* 40 (return-input-int y x "y")) (* 40 (return-input-int y x "x")))))
 
@@ -171,12 +178,15 @@
 (define remove-ship-list (lambda (ship-name active-list)
                            (set! active-list (remove ship-name active-list))))
 
+(define all-active-pos (lambda ()
+                          (for/list ([i active-ships-p1])
+                           (ship-P1-position i))))
+
 ; Draw Functions
 (define set-ship-position-grid (lambda (ship-name position-arg)
                              (for ([i position-arg])
                                (set-state-grid i occupied-cell (get-active-ht active-player)))))
 
-;; change when active-player is changed
 (define draw-ship-to-grid (lambda (ship-name y x direction)
                             (set-ship-position ship-name y x direction '())
                             (change-game-state)
@@ -208,30 +218,32 @@
                    (let ([active-hash grid-ht-p1]
                          [active-lst active-ships-p1])
                      (set-state-grid (list y x) destroyed-cell active-hash)
-                     (ship-hit-check y x active-lst)
+                     (ship-hit-check1 y x active-lst)
                      ))
                    
                   ([equal? player "Player 2"]
                    (let ([active-hash grid-ht-p2]
                          [active-lst active-ships-p2])
                      (set-state-grid (list y x) destroyed-cell active-hash)
-                     (ship-hit-check y x active-lst)
+                     (ship-hit-check1 y x active-lst)
                      ))
                   )
                 )
   )
+
 ;; fix this - (ship-P1-positions (first active-ships-p1))
 ;; create list of all active positions to iterate through, use for loop or create new variable
-(define ship-hit-check (lambda (y x active-lst)
+(define ship-hit-check1 (lambda (y x active-lst)
                          (let ([pos-lst (ship-P1-position (first active-lst))])
                            (cond
                              ([empty? active-lst] "Miss")
-                             ([empty? pos-lst] (ship-hit-check y x (rest active-lst)))
+                             ([empty? pos-lst] (ship-hit-check1 y x (rest active-lst)))
                              ([and (equal? active-player "Player 1") (equal? y (caar pos-lst)) (equal? x (cadar pos-lst))] "Ship Hit")
-                             (else (ship-hit-check y x (rest active-lst)))
+                             (else (ship-hit-check1 y x (rest active-lst)))
                              )
                            )
                          )
   )                        
+
 
 ; Computer/Player 2 Functions
