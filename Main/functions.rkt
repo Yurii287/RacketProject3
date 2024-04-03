@@ -1,10 +1,6 @@
 #lang racket
 ;; to be fixed
-;; cannot place anything in "B" due to hashmap referencing.
-;; cannot place anything in "J" for same reason.
-;; fix ship-hit-check
-;; - (cadaar (all-active-pos)) & (caaar (all-active-pos))
-
+;; fix range for east and west placements
 
 (provide (all-defined-out))
 (require racket/trace)
@@ -56,8 +52,6 @@
                  "H" (vector-ref P2-GRID 7)
                  "I" (vector-ref P2-GRID 8)
                  "J" (vector-ref P2-GRID 9)))
-
-
 
 ; Ship setup
 (struct ship (name length P1-position P2-position P1-state P2-state cumulative) #:mutable)
@@ -159,6 +153,7 @@
                                   ([equal? (length lst) (ship-length ship-name)] (cond
                                                                                    ([equal? active-player "Player 1"] (set-ship-P1-position! ship-name (reverse lst)))
                                                                                    ([equal? active-player "Player 2"] (set-ship-P2-position! ship-name (reverse lst)))))
+                                  ([equal? y "A"] (set-ship-P1-position! ship-name (reverse (cons (list y x) lst))))
                                   (else (set-ship-position ship-name (list-ref (grid-keys (get-active-ht active-player)) (- (index-of (grid-keys (get-active-ht active-player)) y) 1)) x "south" (cons (list y x) lst)))
                                   )
                                )
@@ -167,10 +162,13 @@
                                   ([equal? (length lst) (ship-length ship-name)] (cond
                                                                                    ([equal? active-player "Player 1"] (set-ship-P1-position! ship-name (reverse lst)))
                                                                                    ([equal? active-player "Player 2"] (set-ship-P2-position! ship-name (reverse lst)))))
+                                  ([equal? y "J"] (set-ship-P1-position! ship-name (reverse (cons (list y x) lst))))
                                   (else (set-ship-position ship-name (list-ref (grid-keys (get-active-ht active-player)) (+ (index-of (grid-keys (get-active-ht active-player)) y) 1)) x "north" (cons (list y x) lst)))
                                   )
                                 )
                               )))
+
+(trace set-ship-position)
 
 (define add-ship-list (lambda (ship-name active-list)
                            (set! active-list (cons ship-name active-list))))
@@ -235,8 +233,6 @@
                 )
   )
 
-;call function with flattened list
-;(ship-hit-check "B" 4 (flatten (all-active-pos "Player 1")))
 (define ship-hit-check (lambda (y x pos-lst)
                          (cond
                            ([empty? pos-lst] "Miss")
@@ -245,7 +241,5 @@
                            )
                          )
   )
-                           
-                           
-    
+
 ; Computer/Player 2 Functions
