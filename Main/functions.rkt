@@ -220,32 +220,20 @@
                 (cond
                   ([equal? player "Player 1"]
                    (let ([active-hash grid-ht-p1]
-                         [active-lst active-ships-p1])
+                         [active-lst (flatten (all-active-pos "Player 1"))])
                      (set-state-grid (list y x) destroyed-cell active-hash)
-                     (ship-hit-check1 y x active-lst)
+                     (ship-hit-check y x active-lst)
                      ))
                    
                   ([equal? player "Player 2"]
                    (let ([active-hash grid-ht-p2]
-                         [active-lst active-ships-p2])
+                         [active-lst (flatten (all-active-pos "Player 2"))])
                      (set-state-grid (list y x) destroyed-cell active-hash)
-                     (ship-hit-check1 y x active-lst)
+                     (ship-hit-check y x active-lst)
                      ))
                   )
                 )
   )
-
-(define ship-hit-check1 (lambda (y x active-lst)
-                         (let ([pos-lst (ship-P1-position (first active-lst))])
-                           (cond
-                             ([empty? active-lst] "Miss")
-                             ([empty? pos-lst] (ship-hit-check1 y x (rest active-lst)))
-                             ([and (equal? active-player "Player 1") (equal? y (caar pos-lst)) (equal? x (cadar pos-lst))] "Ship Hit")
-                             (else (ship-hit-check1 y x (rest active-lst)))
-                             )
-                           )
-                         )
-  )                        
 
 ;call function with flattened list
 ;(ship-hit-check "B" 4 (flatten (all-active-pos "Player 1")))
