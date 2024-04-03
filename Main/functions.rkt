@@ -178,9 +178,13 @@
 (define remove-ship-list (lambda (ship-name active-list)
                            (set! active-list (remove ship-name active-list))))
 
-(define all-active-pos (lambda ()
-                          (for/list ([i active-ships-p1])
-                           (ship-P1-position i))))
+(define all-active-pos (lambda (actv-plyr)
+                         (cond
+                         ([equal? actv-plyr "Player 1"] (for/list ([i active-ships-p1]) (ship-P1-position i)))
+                         ([equal? actv-plyr "Player 2"] (for/list ([i active-ships-p2]) (ship-P2-position i)))
+                         )
+                         )
+  )
 
 ; Draw Functions
 (define set-ship-position-grid (lambda (ship-name position-arg)
@@ -231,8 +235,6 @@
                 )
   )
 
-;; fix this - (ship-P1-positions (first active-ships-p1))
-;; create list of all active positions to iterate through, use for loop or create new variable
 (define ship-hit-check1 (lambda (y x active-lst)
                          (let ([pos-lst (ship-P1-position (first active-lst))])
                            (cond
@@ -245,5 +247,17 @@
                          )
   )                        
 
-
+;call function with flattened list
+;(ship-hit-check "B" 4 (flatten (all-active-pos "Player 1")))
+(define ship-hit-check (lambda (y x pos-lst)
+                         (cond
+                           ([empty? pos-lst] "Miss")
+                           ([and (equal? y (car pos-lst)) (equal? x (cadr pos-lst))] "Ship Hit")
+                           (else (ship-hit-check y x (cddr pos-lst)))
+                           )
+                         )
+  )
+                           
+                           
+    
 ; Computer/Player 2 Functions
