@@ -164,8 +164,6 @@
                                 )
                               )))
 
-(trace set-ship-position)
-
 (define add-ship-list (lambda (ship-name active-list)
                            (set! active-list (cons ship-name active-list))))
 
