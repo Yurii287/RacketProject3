@@ -1,9 +1,5 @@
 #lang racket
-;; to be fixed
-;; fix range for east and west placements
-
 (provide (all-defined-out))
-(require racket/trace)
 
 ;; Variables
 (define empty-cell 0)
