@@ -1,6 +1,8 @@
 #lang racket
 (provide (all-defined-out))
 
+(require racket/trace)
+
 ;; Variables
 (define empty-cell 0)
 (define occupied-cell 1)
@@ -11,9 +13,6 @@
 (define active-player null)
 (set! active-player "Player 1")
 
-; 0 = place ships
-; 1 = destroy ships
-; 2 = game over
 (define game-state null)
 (set! game-state 0)
 
@@ -187,10 +186,21 @@
                             (set-ship-position ship-name y x direction '())
                             (change-game-state)
                             (cond
-                              ([equal? active-player "Player 1"] (set! active-ships-p1 (cons ship-name active-ships-p1)) (set-ship-position-grid ship-name (ship-P1-position ship-name)) (set-ship-P1-state! ship-name 1) (get-active-grid active-player) (change-active-player) P1-GRID)
-                              ([equal? active-player "Player 2"] (set! active-ships-p2 (cons ship-name active-ships-p2)) (set-ship-position-grid ship-name (ship-P2-position ship-name)) (set-ship-P2-state! ship-name 1) (get-active-grid active-player) (change-active-player) P2-GRID))
+                              ([and (equal? active-player "Player 1") (ship-collision y x (flatten (all-active-pos "Player 1")))] (set! active-ships-p1 (cons ship-name active-ships-p1)) (set-ship-position-grid ship-name (ship-P1-position ship-name)) (set-ship-P1-state! ship-name 1) (get-active-grid active-player) (change-active-player) P1-GRID)
+                              ([and (equal? active-player "Player 2") (ship-collision y x (flatten (all-active-pos "Player 2")))] (set! active-ships-p2 (cons ship-name active-ships-p2)) (set-ship-position-grid ship-name (ship-P2-position ship-name)) (set-ship-P2-state! ship-name 1) (get-active-grid active-player) (change-active-player) P2-GRID))
                             )
   )
+
+(define ship-collision (lambda (y x pos-lst)
+                         (cond
+                           ([empty? pos-lst] #t)
+                           ([and (equal? y (car pos-lst)) (equal? x (cadr pos-lst))] #f)
+                           (else (ship-collision y x (cddr pos-lst)))
+                           )
+                         )
+  )
+
+(trace ship-collision)
 
 ; Game State Functions
 (define change-game-state (lambda ()

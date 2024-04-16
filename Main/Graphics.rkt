@@ -17,10 +17,10 @@
                     (for ([i  (range y-start y-extent 40) ] [j (build-string 10 (lambda (i) (integer->char (+ i 97))))]) (send dc draw-text (string j) (- x-start 20) i))
                     (for ([i  (range x-start x-extent 40) ] [j (build-list 10 (lambda (x) (+ x 1)))]) (send dc draw-text (number->string j) i y-extent))))
 (define draw-ship(λ (x-start y-start x-extent y-extent direction) (sleep/yield 0.001)(cond ((equal? direction "east")(send dc set-brush "black" 'transparent)(send dc set-pen "red" 5 'solid)(send dc draw-rectangle x-start y-start x-extent y-extent))
-                                                                        ((equal? direction "north")(send dc set-brush "black" 'transparent)(send dc set-pen "red" 5 'solid)(send dc draw-rectangle x-start (- y-start (- x-extent 40)) y-extent x-extent))
-                                                                        ((equal? direction "south")(send dc set-brush "black" 'transparent)(send dc set-pen "red" 5 'solid)(send dc draw-rectangle x-start y-start y-extent x-extent))
-                                                                        ((equal? direction "east")(send dc set-brush "black" 'transparent)(send dc set-pen "red" 5 'solid)(send dc draw-rectangle x-start y-start x-extent y-extent))
-                                                                        ((equal? direction "west")(send dc set-brush "black" 'transparent)(send dc set-pen "red" 5 'solid)(send dc draw-rectangle (- x-start (- x-extent 40)) y-start x-extent y-extent))
+                                                                        ((equal? direction "south")(send dc set-brush "black" 'transparent)(send dc set-pen "red" 5 'solid)(send dc draw-rectangle x-start (- y-start (- x-extent 40)) y-extent x-extent))
+                                                                        ((equal? direction "north")(send dc set-brush "black" 'transparent)(send dc set-pen "red" 5 'solid)(send dc draw-rectangle x-start y-start y-extent x-extent))
+                                                                        ((equal? direction "west")(send dc set-brush "black" 'transparent)(send dc set-pen "red" 5 'solid)(send dc draw-rectangle x-start y-start x-extent y-extent))
+                                                                        ((equal? direction "east")(send dc set-brush "black" 'transparent)(send dc set-pen "red" 5 'solid)(send dc draw-rectangle (- x-start (- x-extent 40)) y-start x-extent y-extent))
                                                                         )))
 
 ;deletes all items in panel2 and creates new ones
@@ -140,32 +140,39 @@
 (define button (new button%
                     (parent panel2)
                     (label "place")
-                    (callback (lambda (button event) (cond ((equal? button_state 0)(cond ((equal? (send choice get-string-selection) "carrier")(send choice delete (send choice get-selection))(draw-ship
+                    (callback (lambda (button event) (cond ((equal? button_state 0)
+                                                            (cond
+                                                              ((equal? (send choice get-string-selection) "carrier")
+                                                               (send choice delete (send choice get-selection))(draw-ship
                                                              (list-ref (return-input-int-draw (string (string-ref (send text-field get-value) 0)) (string->number (string (string-ref (send text-field get-value) 1)))) 1)
                                                              (list-ref (return-input-int-draw (string (string-ref (send text-field get-value) 0)) (string->number (string (string-ref (send text-field get-value) 1)))) 0)
                                                              (ship-cumulative carrier) square-size (send choice2 get-string-selection)))
-                                                           ((equal? (send choice get-string-selection) "battleship")
+
+                                                              ((equal? (send choice get-string-selection) "battleship")
                                                             (send choice delete (send choice get-selection))
                                                             (send choice set-selection (random (send choice get-number)))
                                                             (draw-ship
                                                              (list-ref (return-input-int-draw (string (string-ref (send text-field get-value) 0)) (string->number (string (string-ref (send text-field get-value) 1)))) 1)
                                                              (list-ref (return-input-int-draw (string (string-ref (send text-field get-value) 0)) (string->number (string (string-ref (send text-field get-value) 1)))) 0)
                                                              (ship-cumulative battleship) square-size (send choice2 get-string-selection)))
-                                                           ((equal? (send choice get-string-selection) "cruiser")
+
+                                                              ((equal? (send choice get-string-selection) "cruiser")
                                                             (send choice delete (send choice get-selection))
                                                             (send choice set-selection (random (send choice get-number)))
                                                             (draw-ship
                                                              (list-ref (return-input-int-draw (string (string-ref (send text-field get-value) 0)) (string->number (string (string-ref (send text-field get-value) 1)))) 1)
                                                              (list-ref (return-input-int-draw (string (string-ref (send text-field get-value) 0)) (string->number (string (string-ref (send text-field get-value) 1)))) 0)
                                                              (ship-cumulative cruiser) square-size (send choice2 get-string-selection)))
-                                                           ((equal? (send choice get-string-selection) "submarine")
+
+                                                              ((equal? (send choice get-string-selection) "submarine")
                                                             (send choice delete (send choice get-selection))
                                                             (send choice set-selection (random (send choice get-number)))
                                                             (draw-ship
                                                              (list-ref (return-input-int-draw (string (string-ref (send text-field get-value) 0)) (string->number (string (string-ref (send text-field get-value) 1)))) 1)
                                                              (list-ref (return-input-int-draw (string (string-ref (send text-field get-value) 0)) (string->number (string (string-ref (send text-field get-value) 1)))) 0)
                                                              (ship-cumulative submarine) square-size (send choice2 get-string-selection)))
-                                                           ((equal? (send choice get-string-selection) "destroyer")
+
+                                                              ((equal? (send choice get-string-selection) "destroyer")
                                                             (send choice delete (send choice get-selection))
                                                             (send choice set-selection (random (send choice get-number)))
                                                             (draw-ship
